@@ -1,0 +1,24 @@
+From 60e804899fa8621f5ec5f97275502adeaab7dc9d Mon Sep 17 00:00:00 2001
+From: Sundar Gnanasekaran <sundar.gnanasekaran@intel.corp-partner.google.com>
+Date: Sat, 27 Jun 2026 23:29:26 +0000
+Subject: [PATCH] Fix visibility issue
+
+Signed-off-by: Sundar Gnanasekaran <sundar.gnanasekaran@intel.corp-partner.google.com>
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index 8d4f86b55..1d778dee9 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -321,5 +321,5 @@ rust_defaults {
+         },
+     },
+     defaults_visibility: ["//external/crosvm:__subpackages__"],
+-    visibility: ["//external/crosvm:__subpackages__"],
++    visibility: ["//visibility:public"],
+ }
+-- 
+2.34.1
+
