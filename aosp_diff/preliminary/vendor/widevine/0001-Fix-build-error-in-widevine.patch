@@ -1,0 +1,30 @@
+From 4300c24f3b78e0a462bf1deea7bfd1d367834b3c Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 12:38:03 +0000
+Subject: [PATCH] Fix build error in widevine
+
+Tracked-On: NA
+Change-Id: Idf6f91369570e64a929a5e527fb3542040f5a571
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Android.bp | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index bcadead..aaee2bd 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -36,10 +36,6 @@ widevine_apex_defaults {
+     ],
+     // TODO(b/274041915) remove updatable:false
+     updatable: false,
+-    // TODO(b/268439003) We need an API to get apex version. Until then
+-    // we'll read apex_manifest.pb to get the version. To label apex_manifest.pb
+-    // as vendor_configs_file (which the apex can access), turn off force-label.
+-    use_file_contexts_as_is: true,
+     min_sdk_version: "UpsideDownCake",
+     vendor: true,
+ }
+-- 
+2.34.1
+

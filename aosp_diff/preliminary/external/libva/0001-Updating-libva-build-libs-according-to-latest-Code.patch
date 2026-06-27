@@ -1,14 +1,15 @@
-From 5a79d8e143712e525bc4b4748fdae47d359944cf Mon Sep 17 00:00:00 2001
-From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.com>
-Date: Thu, 2 Jan 2025 07:49:07 +0000
-Subject: [PATCH] Updating libva build libs according to latest Code
+From 70e9698bf4b26083434a633c8bb07275d2e4cd49 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 08:27:22 +0000
+Subject: [PATCH] Using intel specific libva modules
 
-This patch will update the libva libs based on latest
-AOSP and intel dependencies.
+Since we use intel specific libva modules
+so commenting upstream libva modules build.
 
 Tests Done: Build and boot
 
-Tracked-On: OAM-128386
+Tracked-On: NA
+Change-Id: If555b587870d21e712b51f46f4feb2993099f2dd
 Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.com>
 ---
  Android.bp | 179 -----------------------------------------------------
@@ -17,7 +18,7 @@ Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.com>
 
 diff --git a/Android.bp b/Android.bp
 deleted file mode 100644
-index 5c6cae0..0000000
+index ea3b60a..0000000
 --- a/Android.bp
 +++ /dev/null
 @@ -1,179 +0,0 @@
@@ -62,15 +63,15 @@ index 5c6cae0..0000000
 -    name: "libva_gen_headers",
 -    srcs: [
 -        "configure.ac",
--        "va/va_version.h.in",
 -        "va/drm/va_drm.h",
+-        "va/va_version.h.in",
 -    ],
 -    tools: [
 -        "libva_gen_version_script",
 -    ],
 -    out: [
--        "va/va_version.h",
 -        "va/va_drm.h",
+-        "va/va_version.h",
 -    ],
 -    cmd: "$(location libva_gen_version_script) " +
 -        "$$(dirname $(location configure.ac)) " +
@@ -107,9 +108,9 @@ index 5c6cae0..0000000
 -    name: "libva",
 -
 -    shared_libs: [
+-        "libcutils",
 -        "libdl",
 -        "libdrm",
--        "libcutils",
 -        "liblog",
 -    ],
 -
@@ -132,19 +133,19 @@ index 5c6cae0..0000000
 -    ],
 -
 -    srcs: [
--        "va/va.c",
--        "va/va_trace.c",
--        "va/va_str.c",
 -        "va/drm/va_drm.c",
 -        "va/drm/va_drm_auth.c",
 -        "va/drm/va_drm_utils.c",
+-        "va/va.c",
+-        "va/va_str.c",
+-        "va/va_trace.c",
 -    ],
 -
 -    cflags: [
+-        "-DLOG_TAG=\"libva\"",
+-        "-DSYSCONFDIR=\"/vendor/etc\"",
 -        "-Werror",
 -        "-Winvalid-pch",
--        "-DSYSCONFDIR=\"/vendor/etc\"",
--        "-DLOG_TAG=\"libva\"",
 -    ],
 -
 -    arch: {
@@ -162,9 +163,9 @@ index 5c6cae0..0000000
 -    name: "libva-android",
 -
 -    shared_libs: [
--        "libva",
 -        "libdrm",
 -        "liblog",
+-        "libva",
 -    ],
 -
 -    local_include_dirs: [
@@ -187,9 +188,9 @@ index 5c6cae0..0000000
 -    ],
 -
 -    cflags: [
+-        "-DLOG_TAG=\"libva-android\"",
 -        "-Werror",
 -        "-Winvalid-pch",
--        "-DLOG_TAG=\"libva-android\"",
 -    ],
 -
 -    vendor: true,

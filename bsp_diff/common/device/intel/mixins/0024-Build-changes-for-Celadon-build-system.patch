@@ -1,0 +1,122 @@
+From 877e6d3af2dac7d0188f044c9a54bdaf37aa0622 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Wed, 24 Jun 2026 07:49:16 +0000
+Subject: [PATCH] Build changes for Celadon build system
+
+Rules in Android 17 are much more stricter and celadon
+build system needs to be upgraded to meet those rules.
+Also upgraded api level and target level according to android 17.
+
+Tests: Build and boot
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/device-specific/caas/AndroidBoard.mk          | 11 +++++++++--
+ groups/device-specific/caas/BoardConfig.mk           |  1 +
+ groups/device-specific/caas/compatibility_matrix.xml |  4 ++--
+ groups/device-specific/caas/manifest.xml             |  4 ++--
+ groups/kernel/AndroidBoard.mk                        |  4 +++-
+ 5 files changed, 17 insertions(+), 7 deletions(-)
+
+diff --git a/groups/device-specific/caas/AndroidBoard.mk b/groups/device-specific/caas/AndroidBoard.mk
+index f5fc9f2..7dbd432 100644
+--- a/groups/device-specific/caas/AndroidBoard.mk
++++ b/groups/device-specific/caas/AndroidBoard.mk
+@@ -12,15 +12,22 @@ LOCAL_MAKE:= \
+         PATH="$(LOCAL_CLANG_PATH):$(PWD)/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/x86_64-linux/bin:$$PATH" \
+ 	$(PWD)/prebuilts/build-tools/linux-x86/bin/make
+ 
++VINPUT_MANAGER_STAMP := $(PRODUCT_OUT)/vinput-manager.stamp
++EM_HOST_UTILITIES_STAMP := $(PRODUCT_OUT)/em-host-utilities.stamp
++
+ .PHONY: vinput-manager
+-vinput-manager:
++vinput-manager: $(VINPUT_MANAGER_STAMP)
++$(VINPUT_MANAGER_STAMP):
+ 	cd device/intel/civ/host/virtual-input-manager && $(LOCAL_MAKE) OUT=$(abspath $(PRODUCT_OUT)/scripts)
++	$(hide) touch $@
+ 
+ .PHONY: em-host-utilities
+-em-host-utilities:
++em-host-utilities: $(EM_HOST_UTILITIES_STAMP)
++$(EM_HOST_UTILITIES_STAMP):
+ 	mkdir -p $(PRODUCT_OUT)/scripts/
+ 	cd device/intel/civ/host/backend/battery/vm_battery_utility && $(LOCAL_MAKE) OUT=$(abspath $(PRODUCT_OUT)/scripts)
+ 	cd device/intel/civ/host/backend/thermal/vm_thermal_utility && $(LOCAL_MAKE) OUT=$(abspath $(PRODUCT_OUT)/scripts)
++	$(hide) touch $@
+ 
+ .PHONY: host-pkg
+ host-pkg: em-host-utilities vinput-manager
+diff --git a/groups/device-specific/caas/BoardConfig.mk b/groups/device-specific/caas/BoardConfig.mk
+index 093ca4d..7ef3633 100644
+--- a/groups/device-specific/caas/BoardConfig.mk
++++ b/groups/device-specific/caas/BoardConfig.mk
+@@ -48,3 +48,4 @@ BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
+ BUILD_BROKEN_USES_BUILD_HOST_SHARED_LIBRARY := true
+ BUILD_BROKEN_USES_BUILD_HOST_EXECUTABLE := true
+ BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
++BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true
+diff --git a/groups/device-specific/caas/compatibility_matrix.xml b/groups/device-specific/caas/compatibility_matrix.xml
+index e0babf6..ca9cca4 100644
+--- a/groups/device-specific/caas/compatibility_matrix.xml
++++ b/groups/device-specific/caas/compatibility_matrix.xml
+@@ -8,9 +8,9 @@
+         <fqname>IComponentStore/software</fqname>
+     </hal>
+     <system-sdk>
+-        <version>35</version>
++        <version>37</version>
+     </system-sdk>
+     <vendor-ndk>
+-        <version>35</version>
++        <version>37</version>
+     </vendor-ndk>
+ </compatibility-matrix>
+diff --git a/groups/device-specific/caas/manifest.xml b/groups/device-specific/caas/manifest.xml
+index 4a15c76..93c3f36 100644
+--- a/groups/device-specific/caas/manifest.xml
++++ b/groups/device-specific/caas/manifest.xml
+@@ -1,5 +1,5 @@
+ {{^ota-update}}
+-<manifest version="1.0" type="device" target-level="202606">
++<manifest version="1.0" type="device" target-level="202604">
+ {{/ota-update}}
+ {{#ota-update}}
+ <manifest version="1.0" type="device">
+@@ -37,6 +37,6 @@
+     </hal>
+     <!--<kernel target-level="5"/>-->
+     <sepolicy>
+-        <version>202606</version>
++        <version>202604</version>
+     </sepolicy>
+ </manifest>
+diff --git a/groups/kernel/AndroidBoard.mk b/groups/kernel/AndroidBoard.mk
+index dccadc6..2c59dd3 100644
+--- a/groups/kernel/AndroidBoard.mk
++++ b/groups/kernel/AndroidBoard.mk
+@@ -92,7 +92,7 @@ KERNEL_MAKE_OPTIONS = \
+     O=$(abspath $(LOCAL_KERNEL_PATH)) \
+     ARCH=$(TARGET_KERNEL_ARCH) \
+     INSTALL_MOD_PATH=$(KERNEL_INSTALL_MOD_PATH) \
+-    CROSS_COMPILE="x86_64-linux-androidkernel-" \
++    CROSS_COMPILE="x86_64-linux-gnu-" \
+     CCACHE_SLOPPINESS=$(KERNEL_CCSLOP) \
+     $(KERNEL_CLANG_TRIPLE) \
+     $(KERNEL_CC)
+@@ -101,9 +101,11 @@ KERNEL_MAKE_OPTIONS += \
+     EXTRA_FW="$(_EXTRA_FW_)" \
+     EXTRA_FW_DIR="$(abspath $(PRODUCT_OUT)/vendor/firmware)"
+ 
++
+ KERNEL_MAKE_OPTIONS += \
+     LLVM=1 \
+     HOSTLDFLAGS=-fuse-ld=lld \
++    RUSTC= \
+ 
+ KERNEL_BRANCH = {{{branch}}}
+ KERNEL_KMI_GENERATION = {{{kmi_generation}}}
+-- 
+2.34.1
+

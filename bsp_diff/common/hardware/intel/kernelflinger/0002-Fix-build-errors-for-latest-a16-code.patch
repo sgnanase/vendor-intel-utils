@@ -1,0 +1,27 @@
+From d33228b0fb51fbda65198f35688863c75d7eab71 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 9 Jun 2026 06:01:19 +0000
+Subject: [PATCH] Fix build errors for latest a16 code
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ libsslsupport/borningssl/__config_site | 6 ++++++
+ 1 file changed, 6 insertions(+)
+ create mode 100644 libsslsupport/borningssl/__config_site
+
+diff --git a/libsslsupport/borningssl/__config_site b/libsslsupport/borningssl/__config_site
+new file mode 100644
+index 0000000..5c42f19
+--- /dev/null
++++ b/libsslsupport/borningssl/__config_site
+@@ -0,0 +1,6 @@
++// Override for EFI/bare-metal builds: disable threads.
++// __config_site hardcodes _LIBCPP_HAS_THREADS=1 which, combined with
++// -U__linux__, causes libc++ to error with "No thread API".
++#include_next <__config_site>
++#undef  _LIBCPP_HAS_THREADS
++#define _LIBCPP_HAS_THREADS 0
+-- 
+2.34.1
+

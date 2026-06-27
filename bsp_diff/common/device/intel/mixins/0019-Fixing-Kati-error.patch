@@ -1,0 +1,31 @@
+From a4daa519ab515b56a06a9635e5517106dda30012 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Fri, 19 Jun 2026 09:42:47 +0000
+Subject: [PATCH] Fixing Kati error
+
+error: kati doesn't support passing results of $(shell) to other make constructs
+
+Tests Done: Build Proceed
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/kernel/AndroidBoard.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/groups/kernel/AndroidBoard.mk b/groups/kernel/AndroidBoard.mk
+index dc0ba6f..e513654 100644
+--- a/groups/kernel/AndroidBoard.mk
++++ b/groups/kernel/AndroidBoard.mk
+@@ -174,7 +174,7 @@ $(KERNEL_CONFIG): $(KERNEL_CONFIG_DEPS) | $(CHECK_CONFIG_LOG)
+ # BOARD_KERNEL_CONFIG_FILE and BOARD_KERNEL_VERSION can be used to override the values extracted
+ # from INSTALLED_KERNEL_TARGET.
+ BOARD_KERNEL_CONFIG_FILE = $(KERNEL_CONFIG)
+-BOARD_KERNEL_VERSION = $(shell cat $(KERNEL_DEFCONFIG) | sed -nr 's|.*([0-9]+[.][0-9]+[.][0-9]+)(-rc[1-9])? Kernel Configuration.*|\1|p')
++BOARD_KERNEL_VERSION := $(shell cat $(KERNEL_DEFCONFIG) | sed -nr 's|.*([0-9]+[.][0-9]+[.][0-9]+)(-rc[1-9])? Kernel Configuration.*|\1|p')
+ 
+ $(PRODUCT_OUT)/kernel: $(LOCAL_KERNEL) $(LOCAL_KERNEL_PATH)/copy_modules
+ 	$(hide) cp $(LOCAL_KERNEL) $@
+-- 
+2.34.1
+

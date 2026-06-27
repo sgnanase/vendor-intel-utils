@@ -1,6 +1,6 @@
-From 160e74f125c41702794b7820d66dbda846bd04f6 Mon Sep 17 00:00:00 2001
-From: "Subhransu S. Prusty" <subhransu.prusty@intel.com>
-Date: Wed, 23 Oct 2024 09:05:57 +0530
+From b43fe29e82733cf75e34446a775ec8eb8d3c5b28 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 10:01:23 +0000
 Subject: [PATCH] ExternalCameraHAL: Fix incorrect nullptr check on bufPtr
 
 Incorrect bufPtr nullptr check caused "null pointer dereference"
@@ -8,24 +8,25 @@ error during video record stop. Fix to check nullptr on bufPtr without
 dererencing it.
 
 Tracked-On: OAM-123571
+Change-Id: Iff85ff1f5205c5ff275ae41781272756450d596e
 Signed-off-by: Subhransu S. Prusty <subhransu.prusty@intel.com>
 ---
  camera/device/default/ExternalCameraDeviceSession.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/camera/device/default/ExternalCameraDeviceSession.cpp b/camera/device/default/ExternalCameraDeviceSession.cpp
-index 91196d4228..22a3c6e664 100644
+index 992ae8a358..f230e93738 100644
 --- a/camera/device/default/ExternalCameraDeviceSession.cpp
 +++ b/camera/device/default/ExternalCameraDeviceSession.cpp
-@@ -2846,7 +2846,7 @@ bool ExternalCameraDeviceSession::OutputThread::threadLoop() {
-     ALOGV("%s processing new request", __FUNCTION__);
-     const int kSyncWaitTimeoutMs = 500;
-     for (auto& halBuf : req->buffers) {
--        if (*(halBuf.bufPtr) == nullptr) {
-+        if (halBuf.bufPtr == nullptr) {
+@@ -2894,7 +2894,7 @@ bool ExternalCameraDeviceSession::OutputThread::threadLoop() {
+             // typically when the session is closing. Treat it as a import failure and move on.
+             ALOGW("%s: Could not import buffer for stream %d", __FUNCTION__, halBuf.streamId);
+             halBuf.fenceTimeout = true;
+-        } else if (*(halBuf.bufPtr) == nullptr) {
++        } else if (halBuf.bufPtr == nullptr) {
              ALOGW("%s: buffer for stream %d missing", __FUNCTION__, halBuf.streamId);
              halBuf.fenceTimeout = true;
          } else if (halBuf.acquireFence >= 0) {
 -- 
-2.47.0
+2.34.1
 

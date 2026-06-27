@@ -1,0 +1,26 @@
+From 08ea2799fc8c29d96f2e53e9c87ff1649d390116 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Wed, 24 Jun 2026 11:44:12 +0000
+Subject: [PATCH] Add xe3ld firmware for i915
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/graphics/auto/AndroidBoard.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/groups/graphics/auto/AndroidBoard.mk b/groups/graphics/auto/AndroidBoard.mk
+index 52a7e3a..c559166 100644
+--- a/groups/graphics/auto/AndroidBoard.mk
++++ b/groups/graphics/auto/AndroidBoard.mk
+@@ -11,6 +11,7 @@ $(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/tgl*)) ,$
+ $(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/adl*)) ,$(eval I915_FW += i915/$(t)) $(eval $(LOCAL_KERNEL) : $(PRODUCT_OUT)/vendor/firmware/i915/$(t)))
+ $(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/dg2*)) ,$(eval I915_FW += i915/$(t)) $(eval $(LOCAL_KERNEL) : $(PRODUCT_OUT)/vendor/firmware/i915/$(t)))
+ $(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/mtl*)) ,$(eval I915_FW += i915/$(t)) $(eval $(LOCAL_KERNEL) : $(PRODUCT_OUT)/vendor/firmware/i915/$(t)))
++$(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/xe3lpd*)) ,$(eval I915_FW += i915/$(t)) $(eval $(LOCAL_KERNEL) : $(PRODUCT_OUT)/vendor/firmware/i915/$(t)))
+ 
+ $(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/compat*)) ,$(eval I915_FW += i915/$(t)) $(eval $(LOCAL_KERNEL) : $(PRODUCT_OUT)/vendor/firmware/i915/$(t)))
+ $(foreach t, $(patsubst $(I915_FW_PATH)/%,%,$(wildcard $(I915_FW_PATH)/intel_vsec*)) ,$(eval I915_FW += i915/$(t)) $(eval $(LOCAL_KERNEL) : $(PRODUCT_OUT)/vendor/firmware/i915/$(t)))
+-- 
+2.34.1
+

@@ -1,0 +1,57 @@
+From e1fc466956df3f83beae5542359d9dc9d82dfc67 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 10:17:37 +0000
+Subject: [PATCH] Add preprocessor fix for new clang version
+
+Tests Done: Build proceeds
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.com>
+---
+ android/include/mfx_android_config.h |  1 +
+ android/mfx_defs.mk                  | 11 +++++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/android/include/mfx_android_config.h b/android/include/mfx_android_config.h
+index 1ee3135b..26e3f5aa 100644
+--- a/android/include/mfx_android_config.h
++++ b/android/include/mfx_android_config.h
+@@ -20,5 +20,6 @@ Copyright(c) 2011-2018 Intel Corporation. All Rights Reserved.
+ #define MFX_S     0x0b
+ #define MFX_T     0x0c
+ #define MFX_U     0x0d
++#define MFX_W     0x10
+ 
+ #endif // #ifndef __MFX_CONFIG_H__
+diff --git a/android/mfx_defs.mk b/android/mfx_defs.mk
+index 489193b6..896b75d3 100644
+--- a/android/mfx_defs.mk
++++ b/android/mfx_defs.mk
+@@ -22,6 +22,12 @@ MFX_CFLAGS += -DMEDIA_VERSION_STR=\"\\\"${MEDIA_VERSION}\\\"\"
+ MFX_CFLAGS += -DONEVPL_EXPERIMENTAL
+ 
+ # Android version preference:
++ifneq ($(filter 16 16.% W% ,$(PLATFORM_VERSION)),)
++  MFX_ANDROID_VERSION:= MFX_W
++endif
++ifneq ($(filter 17 17.% X% ,$(PLATFORM_VERSION)),)
++  MFX_ANDROID_VERSION:= MFX_W
++endif
+ ifneq ($(filter 14 14.% U% ,$(PLATFORM_VERSION)),)
+   MFX_ANDROID_VERSION:= MFX_U
+ endif
+@@ -48,6 +54,11 @@ ifneq ($(filter 8.% O ,$(PLATFORM_VERSION)),)
+   endif
+ endif
+ 
++# Fallback: default to latest known version for any unrecognized future Android release
++ifeq ($(MFX_ANDROID_VERSION),)
++  MFX_ANDROID_VERSION:= MFX_W
++endif
++
+ # Passing Android-dependency information to the code
+ MFX_CFLAGS += \
+   -DMFX_ANDROID_VERSION=$(MFX_ANDROID_VERSION) \
+-- 
+2.34.1
+

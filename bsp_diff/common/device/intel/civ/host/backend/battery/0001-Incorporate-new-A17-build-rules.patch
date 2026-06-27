@@ -1,0 +1,22 @@
+From 42b2a04ff149c6dcccb6f3788acd227624d4e7fe Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 23 Jun 2026 11:36:55 +0000
+Subject: [PATCH] Incorporate new A17 build rules
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ vm_battery_utility/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vm_battery_utility/Makefile b/vm_battery_utility/Makefile
+index d35b7a0..02f3649 100644
+--- a/vm_battery_utility/Makefile
++++ b/vm_battery_utility/Makefile
+@@ -1,2 +1,2 @@
+ batmake: battery_sysfsread.c
+-	clang -o batsys battery_sysfsread.c -I -Wall -Wpointer-sign -Wuninitialized -Wunused-parameter
++	clang -o $(OUT)/batsys battery_sysfsread.c -I -Wall -Wpointer-sign -Wuninitialized -Wunused-parameter
+-- 
+2.34.1
+

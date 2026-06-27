@@ -1,0 +1,112 @@
+From bdb3aa8ddf4dcb3d4e32235a79333abf4280ed28 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 23 Jun 2026 11:33:50 +0000
+Subject: [PATCH] General fixes due to AOSP 17 build rule changes.
+
+Multiple build rules in android17 have changed and these
+changes will incorporate those build changes in celadon
+build system.
+
+Tests: Build and boot
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/boot-arch/project-celadon/AndroidBoard.mk   |  8 ++++----
+ groups/device-specific/caas/AndroidBoard.mk        | 10 +++-------
+ groups/device-specific/caas/caas.mk                |  5 +++++
+ groups/device-specific/caas/framework_manifest.xml |  2 +-
+ groups/device-specific/caas/manifest.xml           |  2 +-
+ 5 files changed, 14 insertions(+), 13 deletions(-)
+
+diff --git a/groups/boot-arch/project-celadon/AndroidBoard.mk b/groups/boot-arch/project-celadon/AndroidBoard.mk
+index 5755a4e..298dc03 100644
+--- a/groups/boot-arch/project-celadon/AndroidBoard.mk
++++ b/groups/boot-arch/project-celadon/AndroidBoard.mk
+@@ -321,10 +321,10 @@ $(PRODUCT_OUT)/vendor/firmware/kernelflinger.efi: $(PRODUCT_OUT)/efi/kernelfling
+ 	$(ACP) $(PRODUCT_OUT)/efi/kernelflinger.efi $@
+ {{/fw_sbl}}
+ 
+-make_bootloader_dir:
+-	@mkdir -p $(PRODUCT_OUT)/root/bootloader
+-
+-$(PRODUCT_OUT)/ramdisk.img: make_bootloader_dir
++$(PRODUCT_OUT)/root/bootloader:
++	@mkdir -p $@
++ 
++$(PRODUCT_OUT)/ramdisk.img: $(PRODUCT_OUT)/root/bootloader
+ 
+ {{#bootloader_slot_ab}}
+ esp_intermediates := $(call intermediates-dir-for,PACKAGING,esp_zip)
+diff --git a/groups/device-specific/caas/AndroidBoard.mk b/groups/device-specific/caas/AndroidBoard.mk
+index f54382b..f5fc9f2 100644
+--- a/groups/device-specific/caas/AndroidBoard.mk
++++ b/groups/device-specific/caas/AndroidBoard.mk
+@@ -14,17 +14,13 @@ LOCAL_MAKE:= \
+ 
+ .PHONY: vinput-manager
+ vinput-manager:
+-	cd device/intel/civ/host/virtual-input-manager && $(LOCAL_MAKE)
+-	cp device/intel/civ/host/virtual-input-manager/vinput-manager $(PRODUCT_OUT)/scripts/
+-	cp device/intel/civ/host/virtual-input-manager/sendkey $(PRODUCT_OUT)/scripts/
++	cd device/intel/civ/host/virtual-input-manager && $(LOCAL_MAKE) OUT=$(abspath $(PRODUCT_OUT)/scripts)
+ 
+ .PHONY: em-host-utilities
+ em-host-utilities:
+ 	mkdir -p $(PRODUCT_OUT)/scripts/
+-	cd device/intel/civ/host/backend/battery/vm_battery_utility && $(LOCAL_MAKE)
+-	cp device/intel/civ/host/backend/battery/vm_battery_utility/batsys $(PRODUCT_OUT)/scripts/
+-	cd device/intel/civ/host/backend/thermal/vm_thermal_utility && $(LOCAL_MAKE)
+-	cp device/intel/civ/host/backend/thermal/vm_thermal_utility/thermsys $(PRODUCT_OUT)/scripts/
++	cd device/intel/civ/host/backend/battery/vm_battery_utility && $(LOCAL_MAKE) OUT=$(abspath $(PRODUCT_OUT)/scripts)
++	cd device/intel/civ/host/backend/thermal/vm_thermal_utility && $(LOCAL_MAKE) OUT=$(abspath $(PRODUCT_OUT)/scripts)
+ 
+ .PHONY: host-pkg
+ host-pkg: em-host-utilities vinput-manager
+diff --git a/groups/device-specific/caas/caas.mk b/groups/device-specific/caas/caas.mk
+index 4bb60c7..d0a1648 100644
+--- a/groups/device-specific/caas/caas.mk
++++ b/groups/device-specific/caas/caas.mk
+@@ -76,11 +76,16 @@ PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
+ endif
+ {{^ota-update}}
+ PRODUCT_SHIPPING_API_LEVEL := 202604
++PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
+ ifeq ($(BASE_LTS2024_ANDROID_KERNEL), true)
+ PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
+ else
++ifeq ($(BASE_WCL_ANDROID_KERNEL), true)
++PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
++else
+ PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := true
+ endif
++endif
+ {{/ota-update}}
+ {{#ota-update}}
+ PRODUCT_SHIPPING_API_LEVEL := 27
+diff --git a/groups/device-specific/caas/framework_manifest.xml b/groups/device-specific/caas/framework_manifest.xml
+index 807ad00..075b1d2 100644
+--- a/groups/device-specific/caas/framework_manifest.xml
++++ b/groups/device-specific/caas/framework_manifest.xml
+@@ -127,6 +127,6 @@
+ 	<fqname>ICameraProvider/external/0</fqname>
+     </hal>
+     <vendor-ndk>
+-        <version>35</version>
++        <version>37</version>
+     </vendor-ndk>
+ </manifest>
+diff --git a/groups/device-specific/caas/manifest.xml b/groups/device-specific/caas/manifest.xml
+index 8a7b6a8..4a15c76 100644
+--- a/groups/device-specific/caas/manifest.xml
++++ b/groups/device-specific/caas/manifest.xml
+@@ -1,5 +1,5 @@
+ {{^ota-update}}
+-<manifest version="1.0" type="device" target-level="202504">
++<manifest version="1.0" type="device" target-level="202606">
+ {{/ota-update}}
+ {{#ota-update}}
+ <manifest version="1.0" type="device">
+-- 
+2.34.1
+

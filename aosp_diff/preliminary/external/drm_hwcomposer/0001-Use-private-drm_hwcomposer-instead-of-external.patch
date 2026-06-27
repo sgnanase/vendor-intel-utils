@@ -1,0 +1,32 @@
+From f4e82f10fa4d9d28e8d60b2a2e258d8581501597 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Thu, 25 Jun 2026 08:57:26 +0000
+Subject: [PATCH] Since we are using intel drmhwcomposer so remove default
+
+Tracked-On: NA
+Change-Id: I672ee4e8720dd3a47b11c13f09dc608464caf808
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Android.bp => Android.bp_orig           | 0
+ backend/{Android.bp => Android.bp_orig} | 0
+ tests/{Android.bp => Android.bp_orig}   | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+ rename Android.bp => Android.bp_orig (100%)
+ rename backend/{Android.bp => Android.bp_orig} (100%)
+ rename tests/{Android.bp => Android.bp_orig} (100%)
+
+diff --git a/Android.bp b/Android.bp_orig
+similarity index 100%
+rename from Android.bp
+rename to Android.bp_orig
+diff --git a/backend/Android.bp b/backend/Android.bp_orig
+similarity index 100%
+rename from backend/Android.bp
+rename to backend/Android.bp_orig
+diff --git a/tests/Android.bp b/tests/Android.bp_orig
+similarity index 100%
+rename from tests/Android.bp
+rename to tests/Android.bp_orig
+-- 
+2.34.1
+

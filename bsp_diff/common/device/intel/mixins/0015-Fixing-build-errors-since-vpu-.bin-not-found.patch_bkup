@@ -1,0 +1,28 @@
+From 7697c9911a0d900a6da492545f9a2652f064c9ed Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Wed, 10 Jun 2026 09:48:18 +0000
+Subject: [PATCH] Fixing build errors since vpu**.bin not found
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/npu/true/product.mk | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/groups/npu/true/product.mk b/groups/npu/true/product.mk
+index b5904c8..6a43be5 100644
+--- a/groups/npu/true/product.mk
++++ b/groups/npu/true/product.mk
+@@ -3,8 +3,7 @@ LOCAL_NPU_FIRMWARE_DIR_PREBUILTS := hardware/intel/external/npu-prebuilts/firmwa
+ 
+ PRODUCT_COPY_FILES += \
+     $(LOCAL_NPU_FIRMWARE_DIR)/vpu_37xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_37xx_v0.0.bin \
+-    $(LOCAL_NPU_FIRMWARE_DIR)/vpu_40xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_40xx_v0.0.bin \
+-    $(LOCAL_NPU_FIRMWARE_DIR_PREBUILTS)/vpu_50xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_50xx_v0.0.bin
++    $(LOCAL_NPU_FIRMWARE_DIR)/vpu_40xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_40xx_v0.0.bin
+ 
+ PRODUCT_PACKAGES += \
+     libnpu_driver_compiler \
+-- 
+2.34.1
+

@@ -1,0 +1,68 @@
+From 5900f469980a824e2526fd37779e0055eaf3c771 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 16:41:01 +0000
+Subject: [PATCH] Adding stub implementation for Composer V4 missing functions
+
+The AIDL interface IComposerClient was bumped to V4,
+adding 3 new pure virtual methods that Intel's ComposerClient doesn't implement:
+
+ - getMaxLayerPictureProfiles
+ - startHdcpNegotiation
+ - getLuts
+
+Adding stub implementations for the same.
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ hwc3-server/default/ComposerClient.cpp | 16 ++++++++++++++++
+ hwc3-server/default/ComposerClient.h   |  6 ++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/hwc3-server/default/ComposerClient.cpp b/hwc3-server/default/ComposerClient.cpp
+index f67d006..60ff360 100644
+--- a/hwc3-server/default/ComposerClient.cpp
++++ b/hwc3-server/default/ComposerClient.cpp
+@@ -431,6 +431,22 @@ ndk::ScopedAStatus ComposerClient::notifyExpectedPresent(int64_t, const ClockMon
+     return TO_BINDER_STATUS(EX_UNSUPPORTED);
+ }
+ 
++ndk::ScopedAStatus ComposerClient::getMaxLayerPictureProfiles(int64_t, int32_t* out) {
++    *out = 0;
++    return ndk::ScopedAStatus::ok();
++}
++
++ndk::ScopedAStatus ComposerClient::startHdcpNegotiation(int64_t,
++    const ::aidl::android::hardware::drm::HdcpLevels&) {
++    return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
++}
++
++ndk::ScopedAStatus ComposerClient::getLuts(int64_t,
++    const std::vector<::aidl::android::hardware::graphics::composer3::Buffer>&,
++    std::vector<::aidl::android::hardware::graphics::composer3::Luts>* luts) {
++    luts->clear();
++    return ndk::ScopedAStatus::ok();
++}
+ 
+ void ComposerClient::HalEventCallback::onHotplug(int64_t display, bool connected) {
+     DEBUG_FUNC();
+diff --git a/hwc3-server/default/ComposerClient.h b/hwc3-server/default/ComposerClient.h
+index b6963fc..fc9a193 100644
+--- a/hwc3-server/default/ComposerClient.h
++++ b/hwc3-server/default/ComposerClient.h
+@@ -141,6 +141,12 @@ public:
+     ndk::ScopedAStatus notifyExpectedPresent(int64_t displayId,
+                                              const ClockMonotonicTimestamp& expectedPresentTime,
+                                              int32_t maxFrameIntervalNs) override;
++    ndk::ScopedAStatus getMaxLayerPictureProfiles(int64_t display, int32_t* outCount) override;
++    ndk::ScopedAStatus startHdcpNegotiation(int64_t display,
++                               const ::aidl::android::hardware::drm::HdcpLevels& levels) override;
++    ndk::ScopedAStatus getLuts(int64_t display,
++               const std::vector<::aidl::android::hardware::graphics::composer3::Buffer>& buffers,
++               std::vector<::aidl::android::hardware::graphics::composer3::Luts>* luts) override;
+ 
+ protected:
+     ::ndk::SpAIBinder createBinder() override;
+-- 
+2.34.1
+

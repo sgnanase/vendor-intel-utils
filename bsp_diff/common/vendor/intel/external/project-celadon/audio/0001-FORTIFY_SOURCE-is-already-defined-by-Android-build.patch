@@ -1,0 +1,55 @@
+From afd7432e29c649c88bc277c08fc502722a8eb711 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 9 Jun 2026 03:11:10 +0000
+Subject: [PATCH] FORTIFY_SOURCE is already defined by Android build
+
+Removing the redefinition of fortify_source as it is already defined
+by build system for the whole system.
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ hdmi/Android.mk    | 1 -
+ primary/Android.mk | 1 -
+ usb/Android.mk     | 1 -
+ 3 files changed, 3 deletions(-)
+
+diff --git a/hdmi/Android.mk b/hdmi/Android.mk
+index 2144962..efd9908 100755
+--- a/hdmi/Android.mk
++++ b/hdmi/Android.mk
+@@ -37,7 +37,6 @@ LOCAL_C_INCLUDES += \
+ 
+ LOCAL_CFLAGS :=\
+  -fwrapv \
+- -D_FORTIFY_SOURCE=2 \
+  -fstack-protector-strong \
+  -Wno-conversion-null \
+  -Wnull-dereference \
+diff --git a/primary/Android.mk b/primary/Android.mk
+index 8b227d3..6eb902c 100755
+--- a/primary/Android.mk
++++ b/primary/Android.mk
+@@ -37,7 +37,6 @@ LOCAL_C_INCLUDES += \
+ 
+ LOCAL_CFLAGS :=\
+  -fwrapv \
+- -D_FORTIFY_SOURCE=2 \
+  -fstack-protector-strong \
+  -Wno-conversion-null \
+  -Wnull-dereference \
+diff --git a/usb/Android.mk b/usb/Android.mk
+index f4bd3e6..cfacf8a 100755
+--- a/usb/Android.mk
++++ b/usb/Android.mk
+@@ -38,7 +38,6 @@ LOCAL_C_INCLUDES += \
+ 
+ LOCAL_CFLAGS :=\
+  -fwrapv \
+- -D_FORTIFY_SOURCE=2 \
+  -fstack-protector-strong \
+  -Wno-conversion-null \
+  -Wnull-dereference \
+-- 
+2.34.1
+

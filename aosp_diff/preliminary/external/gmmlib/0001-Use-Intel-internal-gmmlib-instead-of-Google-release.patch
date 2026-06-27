@@ -1,6 +1,6 @@
-From 66ed4ed61f5196e5f48e437b3355e103c6647905 Mon Sep 17 00:00:00 2001
-From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.com>
-Date: Tue, 28 Jan 2025 14:13:46 +0000
+From db40ead96adbac12d4eb8a9d7dba227c6a0b5195 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 08:25:40 +0000
 Subject: [PATCH] Use Intel internal gmmlib instead of Google release
 
 This patch will disable gmmlib use from google repo and instead
@@ -9,18 +9,19 @@ use intel internal gmmlib
 Test Done: Build Proceed
 
 Tracked-On: NA
+Change-Id: I1eb96392a917e5774f0c07655e496a4ebe877210
 Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.com>
 ---
- Android.bp | 160 -----------------------------------------------------
- 1 file changed, 160 deletions(-)
+ Android.bp | 161 -----------------------------------------------------
+ 1 file changed, 161 deletions(-)
  delete mode 100644 Android.bp
 
 diff --git a/Android.bp b/Android.bp
 deleted file mode 100644
-index c557b22..0000000
+index 67d9e77..0000000
 --- a/Android.bp
 +++ /dev/null
-@@ -1,160 +0,0 @@
+@@ -1,161 +0,0 @@
 -// Copyright (c) 2024, Intel Corporation
 -
 -// Permission is hereby granted, free of charge, to any person obtaining a
@@ -129,6 +130,7 @@ index c557b22..0000000
 -
 -    cppflags: [
 -        "-Wno-implicit-fallthrough",
+-        "-Wno-pragma-pack-suspicious-include",
 -        "-Wno-missing-braces",
 -        "-Wno-unknown-pragmas",
 -        "-Wno-parentheses",

@@ -1,6 +1,6 @@
-From 27dcfe366362a4eed6b06c86a9d3ffd54fa8f460 Mon Sep 17 00:00:00 2001
-From: Ankit Agarwal <ankit.agarwal@intel.com>
-Date: Mon, 24 Jun 2024 17:38:04 +0530
+From 367c188b2f4317e9ea069ba5e7b4cc0178466cca Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 09:34:36 +0000
 Subject: [PATCH] InputDevice: Use location for idc file
 
 Devices that have multiple usb touchpanels attached that are all using
@@ -25,18 +25,18 @@ Type: New Feature
 Change-Id: I30db47889f4925e8eb6522640bd8316af20ca572
 
 Tracked-On: OAM-104623
+Change-Id: Ib1695ac1bbc32a73bd37fe7ae9323274901d4495
 Signed-off-by: Vilas R K <vilas.r.k@intel.com>
 ---
- include/input/InputDevice.h           | 10 ++++++++++
- libs/input/InputDevice.cpp            | 25 +++++++++++++++++++++++--
- libs/input/tests/InputDevice_test.cpp |  6 ++++++
- 3 files changed, 39 insertions(+), 2 deletions(-)
+ include/input/InputDevice.h |  9 +++++++++
+ libs/input/InputDevice.cpp  | 26 ++++++++++++++++++++++++--
+ 2 files changed, 33 insertions(+), 2 deletions(-)
 
 diff --git a/include/input/InputDevice.h b/include/input/InputDevice.h
-index b7751f704a..2296f8396b 100644
+index b662b1311d..de7dbba491 100644
 --- a/include/input/InputDevice.h
 +++ b/include/input/InputDevice.h
-@@ -71,8 +71,18 @@ struct InputDeviceIdentifier {
+@@ -71,6 +71,15 @@ struct InputDeviceIdentifier {
       */
      std::string getCanonicalName() const;
  
@@ -51,15 +51,12 @@ index b7751f704a..2296f8396b 100644
 +
      bool operator==(const InputDeviceIdentifier&) const = default;
      bool operator!=(const InputDeviceIdentifier&) const = default;
-+
  };
- 
- /* Types of input device sensors. Keep sync with core/java/android/hardware/Sensor.java */
 diff --git a/libs/input/InputDevice.cpp b/libs/input/InputDevice.cpp
-index 9c7c0c19ed..a4cfa19d81 100644
+index a768c95ede..d05bffd8fb 100644
 --- a/libs/input/InputDevice.cpp
 +++ b/libs/input/InputDevice.cpp
-@@ -85,8 +85,20 @@ std::string getInputDeviceConfigurationFilePathByDeviceIdentifier(
+@@ -92,8 +92,20 @@ std::string getInputDeviceConfigurationFilePathByDeviceIdentifier(
      }
  
      // Try device name.
@@ -82,7 +79,7 @@ index 9c7c0c19ed..a4cfa19d81 100644
  }
  
  std::string getInputDeviceConfigurationFilePathByName(
-@@ -163,6 +175,15 @@ std::string InputDeviceIdentifier::getCanonicalName() const {
+@@ -179,6 +191,16 @@ std::string InputDeviceIdentifier::getCanonicalName() const {
      return replacedName;
  }
  
@@ -95,26 +92,10 @@ index 9c7c0c19ed..a4cfa19d81 100644
 +    }
 +    return replacedLocation;
 +}
- 
- // --- InputDeviceInfo ---
- 
-diff --git a/libs/input/tests/InputDevice_test.cpp b/libs/input/tests/InputDevice_test.cpp
-index ee961f0ffc..d0a0535de1 100644
---- a/libs/input/tests/InputDevice_test.cpp
-+++ b/libs/input/tests/InputDevice_test.cpp
-@@ -35,6 +35,12 @@ TEST(InputDeviceIdentifierTest, getCanonicalName) {
-     ASSERT_EQ(std::string("deviceName-123_version_C_"), identifier.getCanonicalName());
- }
- 
-+TEST(InputDeviceIdentifierTest, getCanonicalLocation) {
-+    InputDeviceIdentifier identifier;
-+    identifier.location = "usb-xhci-hcd.1.auto-1.1/input1";
-+    ASSERT_EQ(std::string("usb-xhci-hcd_1_auto-1_1_input1"), identifier.getCanonicalLocation());
-+}
 +
- class InputDeviceKeyMapTest : public testing::Test {
- protected:
-     void loadKeyLayout(const char* name) {
+ // --- InputDeviceInfo ---
+ InputDeviceInfo::InputDeviceInfo() {
+     initialize(/*id=*/-1, /*generation=*/0, /*controllerNumber=*/-1, InputDeviceIdentifier(),
 -- 
 2.34.1
 

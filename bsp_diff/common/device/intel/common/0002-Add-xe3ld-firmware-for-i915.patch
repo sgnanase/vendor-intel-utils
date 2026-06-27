@@ -1,0 +1,28 @@
+From 76c807771ca4c053a85e1559560e9f760b171468 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Wed, 24 Jun 2026 11:43:10 +0000
+Subject: [PATCH] Add xe3ld firmware for i915
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ firmware.mk | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/firmware.mk b/firmware.mk
+index 276403a..112926e 100644
+--- a/firmware.mk
++++ b/firmware.mk
+@@ -47,7 +47,8 @@ LOCAL_FIRMWARE_PATTERN_IN_DIR := \
+     i915/compat \
+     i915/i915_ag \
+     xe/lnl \
+-    xe/ptl
++    xe/ptl \
++    i915/xe3lpd
+ 
+ LOCAL_FIRMWARE_SRC += $(foreach f,$(LOCAL_FIRMWARE_PATTERN),$(shell cd $(FIRMWARES_DIR) && find *$(f)* -type f,l ))
+ LOCAL_FIRMWARE_SRC += $(foreach f,$(LOCAL_FIRMWARE_DIR),$(shell cd $(FIRMWARES_DIR) && find $(f) -type f,l) )
+-- 
+2.34.1
+

@@ -1,0 +1,28 @@
+From d52073d1524a7b55dd858d99a43740e5bde9df98 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 12:46:10 +0000
+Subject: [PATCH] Fix duplication definition of libclvk
+
+Tracked-On: NA
+Change-Id: I4e2f794bc6799aceb0f3ab175d82459152d52d4f
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index aaf28d2..91986ea 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -35,7 +35,7 @@ cc_test {
+ }
+ 
+ cc_library_shared {
+-    name: "libclvk",
++    name: "libclvk_orig",
+     version_script: "src/exports.map",
+     srcs: ["src/*.cpp"],
+     cflags: [
+-- 
+2.34.1
+

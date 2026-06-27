@@ -1,0 +1,42 @@
+From 66c72d0e52101a35fb77f8d9ad58533f88dcd15b Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 23 Jun 2026 11:35:40 +0000
+Subject: [PATCH] Incorporate new A17 build rules
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Makefile | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 5a33294..d20e6a4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,6 @@
+ CFLAGS := -I . -lpthread -Wall -Wpedantic -Wextra
+ CC := clang++
++OUT ?= .
+ 
+ MANAGER_SRCS := vInputManager.cpp vInputDevice.cpp
+ 
+@@ -10,13 +11,13 @@ APPL_SRCS := sendKey.cpp
+ all : clean sendkey lg-input-manager vinput-manager
+ 
+ vinput-manager :
+-	$(CC) $(MANAGER_SRCS) $(CFLAGS) -o vinput-manager
++	$(CC) $(MANAGER_SRCS) $(CFLAGS) -o $(OUT)/vinput-manager
+ 
+ lg-input-manager :
+-	$(CC) $(LG_MANAGER_SRCS) $(CFLAGS) -o lg-input-manager
++	$(CC) $(LG_MANAGER_SRCS) $(CFLAGS) -o $(OUT)/lg-input-manager
+ 
+ sendkey :
+-	$(CC) $(APPL_SRCS) $(CFLAGS) -o sendkey
++	$(CC) $(APPL_SRCS) $(CFLAGS) -o $(OUT)/sendkey
+ 
+ clean:
+ 	$(RM) vinput-manager sendkey lg-input-manager
+-- 
+2.34.1
+

@@ -1,0 +1,33 @@
+From 22f756ac78dd78417980f38a50b7b61503e4ab0a Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Fri, 19 Jun 2026 09:48:15 +0000
+Subject: [PATCH] Rename media-ctl to media-ctl_orig
+
+Since Intel uses its own media-ctl so to resolve
+conflicts between the 2 definitions renaming this to
+media-ctl_orig
+
+Tests Done: Build Proceed
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index 7c00a1d2..d75aa3aa 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -102,7 +102,7 @@ genrule {
+ }
+ 
+ cc_binary {
+-    name: "media-ctl",
++    name: "media-ctl_orig",
+     defaults: ["v4l-utils.cc_defaults"],
+     generated_headers: [
+         "media_bus_format_codes_header",
+-- 
+2.34.1
+

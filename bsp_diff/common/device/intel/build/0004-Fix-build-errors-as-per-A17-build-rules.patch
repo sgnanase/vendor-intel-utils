@@ -1,0 +1,436 @@
+From abe3b6b7390788db396130d45aa231e68048f15e Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Wed, 24 Jun 2026 05:34:18 +0000
+Subject: [PATCH] Fix build errors as per A17 build rules
+
+The source tree is mounted read-only, so touch warn_local_module_tags
+and touch publish_gptimage_var fail at the workspace root. Both need
+their outputs redirected to out/.
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ tasks/checkvendor.mk |  6 ++-
+ tasks/code_check.mk  | 28 ++++++-------
+ tasks/flashfiles.mk  | 44 +++++++++++++-------
+ tasks/publish.mk     | 98 ++++++++++++++++++++++++++++++++++----------
+ 4 files changed, 123 insertions(+), 53 deletions(-)
+ mode change 100755 => 100644 tasks/flashfiles.mk
+
+diff --git a/tasks/checkvendor.mk b/tasks/checkvendor.mk
+index 6d36d23..9d5e2fd 100644
+--- a/tasks/checkvendor.mk
++++ b/tasks/checkvendor.mk
+@@ -1,7 +1,9 @@
+ # Target checkvendor will be built in latest builds (when target publish is built)
++CHECKVENDOR_STAMP := $(PRODUCT_OUT)/checkvendor.stamp
+ .PHONY: checkvendor
+-checkvendor:
++checkvendor: $(CHECKVENDOR_STAMP)
++$(CHECKVENDOR_STAMP):
+ 	@$(INTEL_PATH_BUILD)/tasks/checkvendor.py -l -p vendor/intel
++	$(hide) touch $@
+ 
+ publish_ci: checkvendor
+-
+diff --git a/tasks/code_check.mk b/tasks/code_check.mk
+index 538dabb..97bd5c1 100644
+--- a/tasks/code_check.mk
++++ b/tasks/code_check.mk
+@@ -1,20 +1,18 @@
++flashfiles: $(PRODUCT_OUT)/warn_vendor_modules.stamp $(PRODUCT_OUT)/warn_local_module_tags.stamp
++publish_ci: $(PRODUCT_OUT)/warn_vendor_modules.stamp $(PRODUCT_OUT)/warn_local_module_tags.stamp
+ 
+-
+-
+-flashfiles: warn_vendor_modules warn_local_module_tags
+-publish_ci: warn_vendor_modules warn_local_module_tags
+-
+-.PHONY: warn_vendor_modules warn_local_module_tags
+ # for each module in $(DELINQUANT_VENDOR_MODULES) if LOCAL_MODULE_INSTALLED exists, warn
+-warn_vendor_modules:
++$(PRODUCT_OUT)/warn_vendor_modules.stamp:
+ 	@for i in $(DELINQUANT_VENDOR_MODULES); \
+-	do echo [NOT IN VENDOR][$$TARGET_PRODUCT]\
+-	module:`echo $$i | cut -d: -f1` installed in:`echo $$i | cut -d: -f2` \
+-	by:`echo $$i | cut -d: -f3` should be installed either in /system/vendor \
+-	or /vendor; done
++        do echo [NOT IN VENDOR][$$TARGET_PRODUCT]\
++        module:`echo $$i | cut -d: -f1` installed in:`echo $$i | cut -d: -f2` \
++        by:`echo $$i | cut -d: -f3` should be installed either in /system/vendor \
++        or /vendor; done
++	$(hide) touch $@
+ 
+-warn_local_module_tags:
++$(PRODUCT_OUT)/warn_local_module_tags.stamp:
+ 	@for i in $(DELINQUANT_TAGS_MODULES); \
+-	do echo [LOCAL_MODULE_TAGS][$$TARGET_PRODUCT]\
+-	`echo $$i | cut -d: -f1` have LOCAL_MODULE_TAGS := `echo $$i | cut -d: -f2` \
+-	defined in `echo $$i | cut -d: -f3`; done
++        do echo [LOCAL_MODULE_TAGS][$$TARGET_PRODUCT]\
++        `echo $$i | cut -d: -f1` have LOCAL_MODULE_TAGS := `echo $$i | cut -d: -f2` \
++        defined in `echo $$i | cut -d: -f3`; done
++	$(hide) touch $@
+diff --git a/tasks/flashfiles.mk b/tasks/flashfiles.mk
+old mode 100755
+new mode 100644
+index db141e6..6c569f7
+--- a/tasks/flashfiles.mk
++++ b/tasks/flashfiles.mk
+@@ -324,6 +324,8 @@ ifneq ($(BOARD_HAS_NO_IFWI),true)
+ # $1 is ifwi variable suffix
+ # $2 is the folder where ifwi are published on buildbot
+ 
++PUBLISH_IFWI_STAMP := $(PRODUCT_OUT)/publish_ifwi.stamp
++
+ define ifwi_target
+ 
+ ifneq ($$($(1)),)
+@@ -348,7 +350,7 @@ $$(PUB_$(1)): $$(INTEL_FACTORY_$(1))
+ 
+ ifwi: $$(INTEL_FACTORY_$(1))
+ 
+-publish_ifwi: $$(PUB_$(1))
++PUBLISH_IFWI_DEPS += $$(PUB_$(1))
+ 
+ endif
+ endef
+@@ -373,18 +375,25 @@ PUB_EFI_EMMC_BIN     := stage2
+ 
+ $(foreach ifwi,$(IFWI_LIST),$(eval $(call ifwi_target,$(ifwi),$(PUB_$(ifwi)))))
+ 
++publish_ifwi: $(PUBLISH_IFWI_STAMP)
++$(PUBLISH_IFWI_STAMP): $(PUBLISH_IFWI_DEPS)
++	$(hide) touch $@
++
+ else
+-publish_ifwi:
++publish_ifwi: $(PUBLISH_IFWI_STAMP)
++$(PUBLISH_IFWI_STAMP):
+ 	@echo "Info: board has no ifwi to publish"
++	$(hide) touch $@
+ endif # BOARD_HAS_NO_IFWI
+ 
+ endif # USE_INTEL_FLASHFILES
+ 
+ # Publish the vertical patches to vertical release tar ball
++PUBLISH_VERTICAL_STAMP := $(PRODUCT_OUT)/publish_vertical.stamp
+ .PHONY: publish_vertical
+-publish_vertical:
++publish_vertical: $(PUBLISH_VERTICAL_STAMP)
+ ifneq (,$(wildcard vendor/intel/utils_vertical))
+-publish_vertical:
++$(PUBLISH_VERTICAL_STAMP):
+ 	@echo "Identified Vertical repo and copy the patches to the tar ball"
+ 	$(hide) mkdir -p $(publish_dest)
+ 	$(hide) rm -rf $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files
+@@ -395,10 +404,12 @@ ifneq (,$(wildcard vendor/intel/fw/keybox_provisioning))
+ 	$(hide) cp -r vendor/intel/fw/keybox_provisioning $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files
+ 	$(hide) mv $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files/keybox_provisioning $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files/vertical_keybox_provisioning
+ endif
++	$(hide) touch $@
+ 
+ else
+-publish_vertical:
++$(PUBLISH_VERTICAL_STAMP):
+ 	$(hide) rm -rf $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files
++	$(hide) touch $@
+ endif
+ 
+ ifeq ($(RELEASE_BUILD),true)
+@@ -419,9 +430,11 @@ iso_path = $(shell dirname $(ISO_INSTALL_IMG))
+ LOCAL_TOOL:= \
+    PATH="/bin:$$PATH"
+ 
++FLASHFILES_STAMP := $(PRODUCT_OUT)/flashfiles.stamp
+ .PHONY: flashfiles
++flashfiles: $(FLASHFILES_STAMP)
+ ifeq ($(RELEASE_BUILD),true)
+-flashfiles: $(INTEL_FACTORY_FLASHFILES_TARGET) $(BUILT_RELEASE_FLASH_FILES_PACKAGE) $(gpt_name) publish_mkdir_dest publish_vertical host-pkg selinux_policy check-vintf-all
++$(FLASHFILES_STAMP): $(INTEL_FACTORY_FLASHFILES_TARGET) $(BUILT_RELEASE_FLASH_FILES_PACKAGE) $(gpt_name) publish_mkdir_dest publish_vertical host-pkg selinux_policy
+ 	@$(ACP) $(BUILT_RELEASE_FLASH_FILES_PACKAGE) $(publish_dest)
+ 	@$(ACP) $(BUILT_RELEASE_TARGET_FILES_PACKAGE) $(publish_dest)
+ ifeq (,$(filter  base_aaos aaos_iasw,$(TARGET_PRODUCT)))
+@@ -436,12 +449,12 @@ ifneq (,$(wildcard vendor/intel/utils_vertical))
+ ifneq (,$(wildcard vendor/intel/fw/keybox_provisioning))
+ 	@echo "vertical_keybox_provisioning included"
+ 	$(hide) tar --exclude=*.git -czf $(TARGET_PRODUCT)-releasefiles-$(TARGET_BUILD_VARIANT).tar.gz scripts *patches $(TARGET_PRODUCT)-flashfiles-*.$(fn_compress_format) *provisioning
+-else 
++else
+ 	$(hide) tar --exclude=*.git -czf $(TARGET_PRODUCT)-releasefiles-$(TARGET_BUILD_VARIANT).tar.gz scripts *patches $(TARGET_PRODUCT)-flashfiles-*.$(fn_compress_format)
+ endif
+ else
+ 	$(hide) tar --exclude=*.git -czf $(TARGET_PRODUCT)-releasefiles-$(TARGET_BUILD_VARIANT).tar.gz scripts *patches $(TARGET_PRODUCT)-flashfiles-*.$(fn_compress_format)
+-endif 	
++endif
+ 	$(hide) cp -r $(TOP)/$(TARGET_PRODUCT)-releasefiles-$(TARGET_BUILD_VARIANT).tar.gz $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)
+ 	$(hide) cp -r $(TOP)/$(TARGET_PRODUCT)-releasefiles-$(TARGET_BUILD_VARIANT).tar.gz $(PRODUCT_OUT)
+ 	@echo "Release files are published"
+@@ -472,7 +485,7 @@ else
+ 	$(hide)rm -rf $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release
+ endif
+ else
+-flashfiles: $(INTEL_FACTORY_FLASHFILES_TARGET) publish_gptimage_var publish_mkdir_dest publish_vertical host-pkg selinux_policy check-vintf-all
++$(FLASHFILES_STAMP): $(INTEL_FACTORY_FLASHFILES_TARGET) publish_gptimage_var publish_mkdir_dest publish_vertical host-pkg selinux_policy
+ ifeq (,$(filter  base_aaos aaos_iasw,$(TARGET_PRODUCT)))
+ 	@echo "Publishing Release files started"
+ 	$(hide) mkdir -p $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files
+@@ -521,11 +534,6 @@ else
+ 	$(hide)rm -rf $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release
+ endif
+ endif
+-ifeq ($(USE_INTEL_FLASHFILES),false)
+-publish_ifwi:
+-	@echo "Warning: Unable to fulfill publish_ifwi makefile request"
+-endif
+-
+ ifneq ($(iso_image),false)
+ 	@echo "Generating ISO image $(ISO_INSTALL_IMG) ...";
+ 	$(hide)rm -rf $(PRODUCT_OUT)/efi_images_tmp/;
+@@ -614,3 +622,11 @@ endif
+ 	@echo "ISO Release files are published"
+ endif
+ 	$(hide)rm -rf $(TOP)/$(TARGET_PRODUCT)-releasefiles-$(TARGET_BUILD_VARIANT).tar.gz && rm -rf $(TOP)/Release_Files && rm -rf $(TOP)/$(TARGET_PRODUCT)-flashfiles-*.$(fn_compress_format) && rm -rf $(TOP)/scripts && rm -rf $(TOP)/*patches && rm -rf $(TOP)/*provisioning && rm -rf $(TOP)/pub/$(TARGET_PRODUCT)/$(TARGET_BUILD_VARIANT)/Release_Files $(TOP)/*-flashfile-*.iso
++	$(hide) touch $@
++
++ifeq ($(USE_INTEL_FLASHFILES),false)
++publish_ifwi: $(PUBLISH_IFWI_STAMP)
++$(PUBLISH_IFWI_STAMP):
++	@echo "Warning: Unable to fulfill publish_ifwi makefile request"
++	$(hide) touch $@
++endif
+diff --git a/tasks/publish.mk b/tasks/publish.mk
+index 80d1212..49dd8d4 100644
+--- a/tasks/publish.mk
++++ b/tasks/publish.mk
+@@ -20,9 +20,12 @@ publish_tool_destw := $(publish_tool_dest)/windows-x86/
+ publish_tool_destl := $(publish_tool_dest)/linux-x86/
+ publish_make_dir = $(if $(wildcard $1),,mkdir -p $1)
+ 
++PUBLISH_MKDIR_DEST_STAMP := $(PRODUCT_OUT)/publish_mkdir_dest.stamp
+ .PHONY: publish_mkdir_dest
+-publish_mkdir_dest:
++publish_mkdir_dest: $(PUBLISH_MKDIR_DEST_STAMP)
++$(PUBLISH_MKDIR_DEST_STAMP):
+ 	$(call publish_make_dir, $(publish_dest))
++	$(hide) touch $@
+ 
+ # Publish System symbols
+ PUB_SYSTEM_SYMBOLS := symbols.tar.gz
+@@ -98,31 +101,43 @@ $(PUB_OSAGNOSTIC_TAG): publish_mkdir_dest $(OS_AGNOSTIC_INFO)
+ endif
+ 
+ # Publish kf4sbl
++PUBLISH_KF4SBL_STAMP := $(PRODUCT_OUT)/publish_kf4sbl.stamp
+ .PHONY: publish_kf4sbl
+ ifeq ($(KERNELFLINGER_SUPPORT_NON_EFI_BOOT),true)
+-publish_kf4sbl: publish_mkdir_dest kf4sbl-$(TARGET_BUILD_VARIANT)
++publish_kf4sbl: $(PUBLISH_KF4SBL_STAMP)
++$(PUBLISH_KF4SBL_STAMP): publish_mkdir_dest kf4sbl-$(TARGET_BUILD_VARIANT)
+ 	$(hide)($(ACP) $(BOARD_BOOTLOADER_IASIMAGE) $(publish_dest))
++	$(hide) touch $@
+ else
+-publish_kf4sbl:
++publish_kf4sbl: $(PUBLISH_KF4SBL_STAMP)
++$(PUBLISH_KF4SBL_STAMP):
+ 	@echo "Publish kf4sbl: skipped"
++	$(hide) touch $@
+ endif
+ 
+ # Publish kf4sbl symbols files
++PUBLISH_KF4SBL_SYMBOLS_STAMP := $(PRODUCT_OUT)/publish_kf4sbl_symbols.stamp
+ .PHONY: publish_kf4sbl_symbols
+ ifeq ($(TARGET_BUILD_VARIANT:debug=)|$(KERNELFLINGER_SUPPORT_NON_EFI_BOOT),user|true)
+-publish_kf4sbl_symbols: publish_mkdir_dest kf4sbl-$(TARGET_BUILD_VARIANT) fb4sbl-$(TARGET_BUILD_VARIANT)
++publish_kf4sbl_symbols: $(PUBLISH_KF4SBL_SYMBOLS_STAMP)
++$(PUBLISH_KF4SBL_SYMBOLS_STAMP): publish_mkdir_dest kf4sbl-$(TARGET_BUILD_VARIANT) fb4sbl-$(TARGET_BUILD_VARIANT)
+ 	$(hide)($(ACP) $(KF4SBL_SYMBOLS_ZIP) $(FB4SBL_SYMBOLS_ZIP) $(publish_dest))
++	$(hide) touch $@
+ else
+-publish_kf4sbl_symbols:
++publish_kf4sbl_symbols: $(PUBLISH_KF4SBL_SYMBOLS_STAMP)
++$(PUBLISH_KF4SBL_SYMBOLS_STAMP):
+ 	@echo "Publish kf4sbl symbols: skipped"
++	$(hide) touch $@
+ endif
+ 
+ # Publish Firmware symbols
++PUBLISH_FIRMWARE_SYMBOLS_STAMP := $(PRODUCT_OUT)/publish_firmware_symbols.stamp
+ .PHONY: publish_firmware_symbols
+ FIRMWARE_SYMBOLS_FILE := $(TARGET_DEVICE)-symbols_firmware.zip
+ FIRMWARE_SYMBOLS_PATH := $(wildcard $(INTEL_PATH_HARDWARE)/$(TARGET_BOARD_PLATFORM)-fls/$(PRODUCT_MODEL)/symbols/*.elf)
+ 
+-publish_firmware_symbols: publish_mkdir_dest publish_flashfiles
++publish_firmware_symbols: $(PUBLISH_FIRMWARE_SYMBOLS_STAMP)
++$(PUBLISH_FIRMWARE_SYMBOLS_STAMP): publish_mkdir_dest publish_flashfiles
+ ifneq ($(BUILD_OSAS),1) # prebuilt
+ 	@echo "------------Publish prebuilt firmware symbols from $(FIRMWARE_SYMBOLS_PATH) -----------"
+ ifneq ($(FIRMWARE_SYMBOLS_PATH),)
+@@ -133,72 +148,101 @@ else # built from source
+ 	$(info $(BOOTLOADER_BIN_PATH) $(VMM_BUILD_OUT) $(SECVM_BUILD_DIR))
+ 	$(hide)-(zip -jry $(publish_dest)/$(FIRMWARE_SYMBOLS_FILE) $(BOOTLOADER_BIN_PATH)/*/*.elf $(VMM_BUILD_OUT)/*/*.elf $(SECVM_BUILD_DIR)/*.elf $(THREADX_BUILD_DIR)/*.elf)
+ endif
++	$(hide) touch $@
+ 
+ # Are we doing an 'sdk' type lunch target
+ PUBLISH_SDK := $(strip $(filter sdk sdk_x86,$(TARGET_PRODUCT)))
+ 
+ ifndef PUBLISH_SDK
+ 
++PUBLISH_FLASHFILES_STAMP := $(PRODUCT_OUT)/publish_flashfiles.stamp
+ .PHONY: publish_flashfiles
+ ifdef INTEL_FACTORY_FLASHFILES_TARGET
+-publish_flashfiles: publish_mkdir_dest $(INTEL_FACTORY_FLASHFILES_TARGET)
++publish_flashfiles: $(PUBLISH_FLASHFILES_STAMP)
++$(PUBLISH_FLASHFILES_STAMP): publish_mkdir_dest $(INTEL_FACTORY_FLASHFILES_TARGET)
+ 	@$(ACP) $(INTEL_FACTORY_FLASHFILES_TARGET) $(publish_dest)
++	$(hide) touch $@
+ else
+-publish_flashfiles:
++publish_flashfiles: $(PUBLISH_FLASHFILES_STAMP)
++$(PUBLISH_FLASHFILES_STAMP):
+ 	@echo "Warning: Unable to fulfill publish_flashfiles makefile request"
++	$(hide) touch $@
+ endif
+ 
++PUBLISH_IFWI_STAMP ?= $(PRODUCT_OUT)/publish_ifwi.stamp
+ .PHONY:publish_ifwi
+ ifeq ($(USE_INTEL_FLASHFILES),false)
+-publish_ifwi:
++publish_ifwi: $(PUBLISH_IFWI_STAMP)
++$(PUBLISH_IFWI_STAMP):
+ 	@echo "Warning: Unable to fulfill publish_ifwi makefile request"
++	$(hide) touch $@
+ endif
+ 
++PUBLISH_LIVEIMAGE_STAMP := $(PRODUCT_OUT)/publish_liveimage.stamp
+ .PHONY: publish_liveimage
+ ifdef INTEL_LIVEIMAGE_TARGET
+-publish_liveimage: publish_mkdir_dest $(INTEL_LIVEIMAGE_TARGET)
++publish_liveimage: $(PUBLISH_LIVEIMAGE_STAMP)
++$(PUBLISH_LIVEIMAGE_STAMP): publish_mkdir_dest $(INTEL_LIVEIMAGE_TARGET)
+ 	@$(ACP) $(INTEL_LIVEIMAGE_TARGET) $(publish_dest)
++	$(hide) touch $@
+ else
+-publish_liveimage:
++publish_liveimage: $(PUBLISH_LIVEIMAGE_STAMP)
++$(PUBLISH_LIVEIMAGE_STAMP):
+ 	@echo "Warning: Unable to fulfill publish_liveimage makefile request"
++	$(hide) touch $@
+ endif
+ 
++PUBLISH_GPTIMAGE_STAMP := $(PRODUCT_OUT)/publish_gptimage.stamp
+ .PHONY: publish_gptimage
+ ifdef GPTIMAGE_BIN
++publish_gptimage: $(PUBLISH_GPTIMAGE_STAMP)
+ ifeq ($(COMPRESS_GPTIMAGE), true)
+-publish_gptimage: publish_mkdir_dest $(GPTIMAGE_BIN)
++$(PUBLISH_GPTIMAGE_STAMP): publish_mkdir_dest $(GPTIMAGE_BIN)
+ 	@echo compress $(GPTIMAGE_BIN) into $(GPTIMAGE_GZ)
+ 	@gzip -fk $(GPTIMAGE_BIN)
+ 	@$(ACP) $(GPTIMAGE_GZ) $(publish_dest)
+ else # COMPRESS_GPTIMAGE is not true
+-publish_gptimage: publish_mkdir_dest $(GPTIMAGE_BIN)
++$(PUBLISH_GPTIMAGE_STAMP): publish_mkdir_dest $(GPTIMAGE_BIN)
+ 	@$(ACP) $(GPTIMAGE_BIN) $(publish_dest)
+ endif # COMPRESS_GPTIMAGE
+ ifdef CRAFFIMAGE_BIN
+ 	$(TOP)/$(INTEL_PATH_BUILD)/createcraffimage.py --image $(GPTIMAGE_BIN)
+ 	@$(ACP) $(CRAFFIMAGE_BIN) $(publish_dest)
+ endif
++	$(hide) touch $@
+ else  # GPTIMAGE_BIN is not defined
+-publish_gptimage:
++publish_gptimage: $(PUBLISH_GPTIMAGE_STAMP)
++$(PUBLISH_GPTIMAGE_STAMP):
+ 	@echo "Warning: Unable to fulfill publish_gptimage makefile request"
++	$(hide) touch $@
+ endif # GPTIMAGE_BIN
+ 
++PUBLISH_GPTIMAGE_VAR_STAMP := $(PRODUCT_OUT)/publish_gptimage_var.stamp
+ .PHONY: publish_gptimage_var
+ ifeq ($(BUILD_GPTIMAGE), true)
+-publish_gptimage_var: publish_gptimage
++publish_gptimage_var: $(PUBLISH_GPTIMAGE_VAR_STAMP)
++$(PUBLISH_GPTIMAGE_VAR_STAMP): publish_gptimage
+ 	@echo "building gptimages ..."
++	$(hide) touch $@
+ else  # GPTIMAGE_BIN is not defined
+-publish_gptimage_var:
++publish_gptimage_var: $(PUBLISH_GPTIMAGE_VAR_STAMP)
++$(PUBLISH_GPTIMAGE_VAR_STAMP):
+ 	@echo "skip build gptimage"
++	$(hide) touch $@
+ endif # GPTIMAGE_BIN
+ 
++PUBLISH_ANDROIDIA_IMAGE_STAMP := $(PRODUCT_OUT)/publish_androidia_image.stamp
+ .PHONY: publish_androidia_image
+ ifdef ANDROID_IA_IMAGE
+-publish_androidia_image: publish_mkdir_dest $(ANDROID_IA_IMAGE)
++publish_androidia_image: $(PUBLISH_ANDROIDIA_IMAGE_STAMP)
++$(PUBLISH_ANDROIDIA_IMAGE_STAMP): publish_mkdir_dest $(ANDROID_IA_IMAGE)
+ 	@$(ACP) $(ANDROID_IA_IMAGE) $(publish_dest)
++	$(hide) touch $@
+ else
+-publish_androidia_image:
++publish_androidia_image: $(PUBLISH_ANDROIDIA_IMAGE_STAMP)
++$(PUBLISH_ANDROIDIA_IMAGE_STAMP):
+ 	@echo "Warning: Unable to fulfill publish_androidia_image makefile request"
++	$(hide) touch $@
+ endif
+ 
+ .PHONY: publish_otapackage
+@@ -210,19 +254,24 @@ publish_ota_targetfiles: publish_mkdir_dest $(BUILT_TARGET_FILES_PACKAGE)
+ 	@$(ACP) $(BUILT_TARGET_FILES_PACKAGE) $(publish_dest)
+ 
+ .PHONY: publish_ota_flashfile
++PUBLISH_OTA_FLASHFILE_STAMP := $(PRODUCT_OUT)/publish_ota_flashfile.stamp
+ ifneq ($(PUBLISH_CONF),)
+ BUILDBOT_PUBLISH_DEPS := $(shell python -c 'import json,os ; print " ".join(json.loads(os.environ["PUBLISH_CONF"]).get("$(TARGET_BUILD_VARIANT)",[]))')
+ 
+ # Translate buildbot target to makefile target
+-publish_ota_flashfile: $(BUILDBOT_PUBLISH_DEPS)
++publish_ota_flashfile: $(PUBLISH_OTA_FLASHFILE_STAMP)
++$(PUBLISH_OTA_FLASHFILE_STAMP): $(BUILDBOT_PUBLISH_DEPS)
++	$(hide) touch $@
+ 
+ full_ota: publish_otapackage
+ full_ota_flashfile:
+ ota_target_files: publish_ota_targetfiles
+ system_img:
+ else
+-publish_ota_flashfile:
++publish_ota_flashfile: $(PUBLISH_OTA_FLASHFILE_STAMP)
++$(PUBLISH_OTA_FLASHFILE_STAMP):
+ 	@echo "Do not publish ota_flashfile"
++	$(hide) touch $@
+ endif # PUBLISH_CONF
+ 
+ PUBLISH_CI_FILES := out/dist/fastboot out/dist/adb
+@@ -279,16 +328,21 @@ ifeq (,$(PUBLISH_GOALS))
+ PUBLISH_GOALS := $(DEFAULT_GOAL)
+ endif
+ 
++PUBLISH_GRUBINSTALLER_STAMP := $(PRODUCT_OUT)/publish_grubinstaller.stamp
+ .PHONY: publish_grubinstaller
+ ifeq ($(ENABLE_GRUB_INSTALLER),true)
+ ifneq ($(TARGET_BUILD_VARIANT),user)
+-publish_grubinstaller: publish_mkdir_dest $(PROJECT_CELADON-EFI)
++publish_grubinstaller: $(PUBLISH_GRUBINSTALLER_STAMP)
++$(PUBLISH_GRUBINSTALLER_STAMP): publish_mkdir_dest $(PROJECT_CELADON-EFI)
+ 	echo compress $(PROJECT_CELADON-EFI) into $(PROJECT_CELADON-EFI).gz
+ 	gzip -f $(PROJECT_CELADON-EFI)
+ 	@$(ACP) $(PROJECT_CELADON-EFI).gz $(publish_dest)
++	$(hide) touch $@
+ else
+-publish_grubinstaller:
++publish_grubinstaller: $(PUBLISH_GRUBINSTALLER_STAMP)
++$(PUBLISH_GRUBINSTALLER_STAMP):
+ 	echo "Do not publish grub installer in user mode"
++	$(hide) touch $@
+ endif
+ endif # ENABLE_GRUB_INSTALLER
+ 
+-- 
+2.34.1
+

@@ -1,0 +1,43 @@
+From ba5dc21b99f2e44c3248e943ae1c462ec7340f46 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Wed, 10 Jun 2026 09:42:16 +0000
+Subject: [PATCH] Fix build errors for art module.
+
+Tracked-On: NA
+Change-Id: Ida32a3f7b5e776e72067d782af57e64ab6a07719
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ build/art.go       | 2 +-
+ runtime/Android.bp | 3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/build/art.go b/build/art.go
+index c77adf9860..8979637f78 100644
+--- a/build/art.go
++++ b/build/art.go
+@@ -166,7 +166,7 @@ func globalFlags(ctx android.LoadHookContext) ([]string, []string) {
+ 
+ func deviceFlags(ctx android.LoadHookContext) []string {
+ 	var cflags []string
+-	deviceFrameSizeLimit := 1848
++	deviceFrameSizeLimit := 2024
+ 	if len(ctx.Config().SanitizeDevice()) > 0 {
+ 		deviceFrameSizeLimit = 7400
+ 	}
+diff --git a/runtime/Android.bp b/runtime/Android.bp
+index 66fe9190da..9389974eea 100644
+--- a/runtime/Android.bp
++++ b/runtime/Android.bp
+@@ -897,6 +897,9 @@ art_cc_library {
+         "libart-compiler",
+         "libart-runtime",
+     ],
++    cflags: [
++        "-Wno-frame-larger-than",
++    ],
+     apex_available: [
+         "com.android.art.debug",
+         "com.android.art",
+-- 
+2.34.1
+

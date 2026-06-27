@@ -1,4 +1,4 @@
-From e0567832c916949801fe91d26347f82dd2de86ee Mon Sep 17 00:00:00 2001
+From d85fecef5781c05ce32ffdae47c4e96f884fc5f9 Mon Sep 17 00:00:00 2001
 From: padmashree mandri <padmashree.mandri@intel.com>
 Date: Fri, 2 Aug 2024 05:21:02 +0000
 Subject: [PATCH] Enable AIDL as first option in audio rc file
@@ -16,7 +16,7 @@ Signed-off-by: padmashree mandri <padmashree.mandri@intel.com>
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/media/audioserver/audioserver.rc b/media/audioserver/audioserver.rc
-index 3445703760..0584c24cc8 100644
+index 74639bb489..33f80fd7ae 100644
 --- a/media/audioserver/audioserver.rc
 +++ b/media/audioserver/audioserver.rc
 @@ -8,11 +8,11 @@ service audioserver /system/bin/audioserver
@@ -32,7 +32,7 @@ index 3445703760..0584c24cc8 100644
  
  on property:vts.native_server.on=1
      stop audioserver
-@@ -20,40 +20,40 @@ on property:vts.native_server.on=0
+@@ -20,19 +20,19 @@ on property:vts.native_server.on=0
      start audioserver
  
  on property:init.svc.audioserver=stopped
@@ -51,6 +51,11 @@ index 3445703760..0584c24cc8 100644
      start vendor.audio-hal-4-0-msd
      start audio_proxy_service
 +    start vendor.audio-hal
+ 
+ on property:init.svc.audioserver=running && property:vts.native_server.on=1
+     # See b/378773354. To ensure the audioserver disable when
+@@ -41,25 +41,25 @@ on property:init.svc.audioserver=running && property:vts.native_server.on=1
+     stop audioserver
  
  on property:init.svc.audioserver=running
 -    start vendor.audio-hal

@@ -1,0 +1,40 @@
+From 21c381b640c9d3fe82d152c60dd60a6dbb231c78 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Fri, 19 Jun 2026 03:44:08 +0000
+Subject: [PATCH] Kotlin error for new kotlin
+
+SuppressLint("NewApi") is applied directly to a lambda/block
+expression, which newer Kotlin
+(-Xannotation-default-target=param-property) no longer allows.
+Moving it outside the enclosing function.
+
+Tracked-On: NA
+Change-Id: I6c1856a9006b7567af6a39f049ac503ac6864c09
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ .../android/photopicker/core/components/mediagrid/MediaGrid.kt  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/photopicker/src/com/android/photopicker/core/components/mediagrid/MediaGrid.kt b/photopicker/src/com/android/photopicker/core/components/mediagrid/MediaGrid.kt
+index 051df2af7..fd2a6f6a2 100644
+--- a/photopicker/src/com/android/photopicker/core/components/mediagrid/MediaGrid.kt
++++ b/photopicker/src/com/android/photopicker/core/components/mediagrid/MediaGrid.kt
+@@ -258,6 +258,7 @@ private val MEASUREMENT_DISABLED_ICON_PADDING = 8.dp
+  * @Param arePlaceholdersEnabled Whether placeholders are enabled in the grid.
+  */
+ @Composable
++@SuppressLint("NewApi")
+ fun mediaGrid(
+     state: MediaGridState = rememberMediaGridState(),
+     items: LazyPagingItems<MediaGridItem>,
+@@ -427,7 +428,6 @@ fun mediaGrid(
+                             // This can be safely suppressed as the condition includes the SdkLevel
+                             // check, but the Linter doesn't understand the precondition to this
+                             // block being run.
+-                            @SuppressLint("NewApi")
+                             transferScrollableTouchesToHostInEmbedded(
+                                 state.gridState,
+                                 isExpanded,
+-- 
+2.34.1
+

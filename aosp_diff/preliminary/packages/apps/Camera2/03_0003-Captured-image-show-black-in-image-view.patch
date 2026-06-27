@@ -1,5 +1,5 @@
-From f7f12d4c17a3136494af0d660fcc284e2d848f78 Mon Sep 17 00:00:00 2001
-From: user189 <shiva.kumara.rudrappa@intel.com>
+From 4a4ff0b25c807e4d2e99ba4dd7fd10b0006b93c7 Mon Sep 17 00:00:00 2001
+From: shiva kumara R <shiva.kumara.rudrappa@intel.com>
 Date: Thu, 18 Mar 2021 16:27:24 +0530
 Subject: [PATCH] Captured image show black in image view
 
@@ -18,7 +18,7 @@ Signed-off-by: shiva kumara R <shiva.kumara.rudrappa@intel.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/AndroidManifest.xml b/AndroidManifest.xml
-index 4d7e17144..d2c35f2b9 100644
+index 303819285..276a32e7e 100644
 --- a/AndroidManifest.xml
 +++ b/AndroidManifest.xml
 @@ -28,6 +28,7 @@
@@ -29,14 +29,14 @@ index 4d7e17144..d2c35f2b9 100644
      <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
  
      <supports-screens
-@@ -46,6 +47,7 @@
-         android:restoreAnyVersion="true"
+@@ -47,6 +48,7 @@
          android:supportsRtl="true"
          android:theme="@style/Theme.Camera"
+         android:enableOnBackInvokedCallback="false"
 +        android:requestLegacyExternalStorage="true"
          android:usesCleartextTraffic="false" >
          <activity
              android:name="com.android.camera.CameraActivity"
 -- 
-2.17.1
+2.34.1
 

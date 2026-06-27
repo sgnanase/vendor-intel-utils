@@ -1,0 +1,42 @@
+From 4782fa57dd754717b91469b6647687096cdad053 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 9 Jun 2026 03:22:35 +0000
+Subject: [PATCH] Fix the Memtrack related build errors in latest A16
+
+Tracked-On: NA
+Change-Id: Iaf1a1d08a12f950242bf5d88312e7732ed6591c7
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ memtrack/aidl/default/Memtrack.h | 2 ++
+ memtrack/aidl/default/main.cpp   | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/memtrack/aidl/default/Memtrack.h b/memtrack/aidl/default/Memtrack.h
+index b8d2202c96..c325bddc88 100644
+--- a/memtrack/aidl/default/Memtrack.h
++++ b/memtrack/aidl/default/Memtrack.h
+@@ -20,6 +20,8 @@
+ #include <aidl/android/hardware/memtrack/DeviceInfo.h>
+ #include <aidl/android/hardware/memtrack/MemtrackRecord.h>
+ #include <aidl/android/hardware/memtrack/MemtrackType.h>
++#include <hardware/hardware.h>
++#include <hardware/memtrack.h>
+ 
+ namespace aidl {
+ namespace android {
+diff --git a/memtrack/aidl/default/main.cpp b/memtrack/aidl/default/main.cpp
+index c318236808..3576c8de72 100644
+--- a/memtrack/aidl/default/main.cpp
++++ b/memtrack/aidl/default/main.cpp
+@@ -20,7 +20,7 @@
+ #include <android/binder_manager.h>
+ #include <android/binder_process.h>
+ 
+-using aidl::android::hardware::memtrack::Memtrack;
++using aidl::android::hardware::memtrack::impl::Memtrack;
+ 
+ int main() {
+     ABinderProcess_setThreadPoolMaxThreadCount(0);
+-- 
+2.34.1
+

@@ -1,6 +1,0 @@
-// Override for EFI/bare-metal builds: disable threads.
-// __config_site hardcodes _LIBCPP_HAS_THREADS=1 which, combined with
-// -U__linux__, causes libc++ to error with "No thread API".
-#include_next <__config_site>
-#undef  _LIBCPP_HAS_THREADS
-#define _LIBCPP_HAS_THREADS 0

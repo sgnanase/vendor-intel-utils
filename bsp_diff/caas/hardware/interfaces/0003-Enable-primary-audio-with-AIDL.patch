@@ -1,4 +1,4 @@
-From 24ee4593edde7a796cd96068b2def5943c2067cb Mon Sep 17 00:00:00 2001
+From d45e26c7266b2414a8f2e1121b0ec4a9d18747fe Mon Sep 17 00:00:00 2001
 From: padmashree mandri <padmashree.mandri@intel.com>
 Date: Wed, 8 Jan 2025 15:39:28 +0000
 Subject: [PATCH] Enable primary audio with AIDL

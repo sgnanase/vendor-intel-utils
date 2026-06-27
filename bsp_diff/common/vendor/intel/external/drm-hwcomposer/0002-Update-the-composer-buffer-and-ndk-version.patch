@@ -1,0 +1,49 @@
+From 2031657bb72e23e009908405d3ae29f839b7fe0f Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Fri, 19 Jun 2026 09:20:36 +0000
+Subject: [PATCH] Update the composer buffer and ndk version
+
+This patch updates the composer buffer and ndk versions
+to V5 to match with the latest AOSP a17 codebase.
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Android.bp | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index c6c2af0..3a698b7 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -45,9 +45,6 @@ cc_library_static {
+ cc_defaults {
+     name: "hwcomposer.drm_defaults",
+ 
+-    defaults: [
+-        "android.hardware.graphics.composer3-ndk_shared",
+-    ],
+     shared_libs: [
+         "libcutils",
+         "libdrm",
+@@ -59,6 +56,8 @@ cc_defaults {
+         "libutils",
+         "libbinder",
+         "libhwcservice",
++        "android.hardware.drm.common-V1-ndk",
++        "android.hardware.graphics.composer3-V5-ndk",
+     ],
+ 
+     include_dirs: [
+@@ -66,7 +65,7 @@ cc_defaults {
+     ],
+ 
+     header_libs: [
+-        "android.hardware.graphics.composer3-command-buffer",
++        "android.hardware.graphics.composer3-command-buffer-V5",
+     ],
+     static_libs: ["libdrmhwc_utils"],
+ 
+-- 
+2.34.1
+

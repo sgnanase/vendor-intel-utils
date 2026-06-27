@@ -1,0 +1,37 @@
+From b8e4070ffa9c70acdac5b4369f8d7f26fe2a87e8 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 08:00:33 +0000
+Subject: [PATCH] Adding header check to resolve redefinition error
+
+Tests Done: Build and boot
+
+Tracked-On: NA
+Change-Id: I117b819f66dcbd054c22c3344729d053ad58118e
+Signed-off-by: Salini Venate <salini.venate@intel.com>
+---
+ libc/include/bits/mbstate_t.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libc/include/bits/mbstate_t.h b/libc/include/bits/mbstate_t.h
+index 8e407f977..270934da6 100644
+--- a/libc/include/bits/mbstate_t.h
++++ b/libc/include/bits/mbstate_t.h
+@@ -37,6 +37,8 @@
+ 
+ __BEGIN_DECLS
+ 
++#ifndef __mbstate_t_defined
++#define __mbstate_t_defined 1
+ /**
+  * An opaque type used by the multibyte conversion functions.
+  * Do not make assumptions about the content of this type.
+@@ -47,5 +49,6 @@ typedef struct {
+   unsigned char __reserved[4];
+ #endif
+ } mbstate_t;
++#endif
+ 
+ __END_DECLS
+-- 
+2.34.1
+

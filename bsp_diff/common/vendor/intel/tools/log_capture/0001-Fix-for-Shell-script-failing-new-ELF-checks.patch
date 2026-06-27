@@ -1,0 +1,42 @@
+From 839bf921f36b59f7d124b532fcad20b3cc5994f3 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 16:34:06 +0000
+Subject: [PATCH] Fix for Shell script failing new ELF checks
+
+Newer Android build system now runs check_elf_files
+on EXECUTABLES modules, which rejects non-ELF files.
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ crashlog/Android.mk    | 1 +
+ log_service/Android.mk | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/crashlog/Android.mk b/crashlog/Android.mk
+index 4e90d43..1ad3672 100755
+--- a/crashlog/Android.mk
++++ b/crashlog/Android.mk
+@@ -100,6 +100,7 @@ LOCAL_MODULE_TAGS := optional
+ LOCAL_MODULE_OWNER := intel
+ LOCAL_SRC_FILES := $(1)
+ LOCAL_MODULE_CLASS := EXECUTABLES
++LOCAL_CHECK_ELF_FILES := false
+ LOCAL_PROPRIETARY_MODULE := true
+ include $(BUILD_PREBUILT)
+ 
+diff --git a/log_service/Android.mk b/log_service/Android.mk
+index f315b0d..f583da1 100644
+--- a/log_service/Android.mk
++++ b/log_service/Android.mk
+@@ -27,6 +27,7 @@ LOCAL_MODULE_TAGS := optional
+ LOCAL_MODULE_OWNER := intel
+ LOCAL_SRC_FILES := $(1)
+ LOCAL_MODULE_CLASS := EXECUTABLES
++LOCAL_CHECK_ELF_FILES := false
+ LOCAL_PROPRIETARY_MODULE := true
+ include $(BUILD_PREBUILT)
+ 
+-- 
+2.34.1
+

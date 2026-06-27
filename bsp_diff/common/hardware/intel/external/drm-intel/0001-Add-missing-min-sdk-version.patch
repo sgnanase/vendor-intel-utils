@@ -1,0 +1,30 @@
+From 38304fc74d389861a831a3cfc50cf073eabce596 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Fri, 19 Jun 2026 09:22:40 +0000
+Subject: [PATCH] Add missing min sdk version
+
+libdrm module is missing the min_sdk_version definition.
+Define it.
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index b512fc2f..495d005e 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -65,7 +65,7 @@ cc_library {
+         "libdrm_defaults",
+         "libdrm_sources",
+     ],
+-
++    min_sdk_version: "35",
+     export_include_dirs: ["include/drm", "android"],
+ 
+     cflags: [
+-- 
+2.34.1
+

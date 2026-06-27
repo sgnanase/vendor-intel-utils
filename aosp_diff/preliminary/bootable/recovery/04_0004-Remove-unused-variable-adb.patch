@@ -1,0 +1,37 @@
+From 949d321d810efc4328feda627a367c4c127c265e Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 17:37:44 +0000
+Subject: [PATCH] Remove unused variable adb
+
+adb is defined but never used. So removing it.
+
+Tracked-On: NA
+Change-Id: I5a69de1dc3c031fbdb9874251d68d8891b32a2bb
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ recovery.cpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/recovery.cpp b/recovery.cpp
+index 6bb126e8..2ff51d45 100644
+--- a/recovery.cpp
++++ b/recovery.cpp
+@@ -490,7 +490,6 @@ static Device::BuiltinAction PromptAndWait(Device* device, InstallResult status)
+         update_in_progress = true;
+         WriteUpdateInProgress();
+ 
+-        bool adb = true;
+         Device::BuiltinAction reboot_action{};
+         if (chosen_action == Device::ENTER_RESCUE) {
+           // Switch to graphics screen.
+@@ -499,7 +498,6 @@ static Device::BuiltinAction PromptAndWait(Device* device, InstallResult status)
+         } else if (chosen_action == Device::APPLY_ADB_SIDELOAD) {
+           status = ApplyFromAdb(device, false /* rescue_mode */, &reboot_action);
+         } else {
+-          adb = false;
+           if (chosen_action == Device::APPLY_SDCARD)
+             status = ApplyFromSdcard(device);
+           else if (chosen_action == Device::APPLY_UDISK)
+-- 
+2.34.1
+

@@ -1,0 +1,33 @@
+From 5860144a9c2246747a16efc72e699618294bb68f Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 22 Jun 2026 08:29:04 +0000
+Subject: [PATCH] Make xe display driver loaded at boot
+
+We dont want to load xe display driver to load as module
+so removing the drm_xe module dependency to make it
+auto load at boot.
+
+Tests: Build and boot to display
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ drivers/gpu/drm/xe/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/xe/Kconfig b/drivers/gpu/drm/xe/Kconfig
+index 4d7dcaff2b91..85fe541f2d2c 100644
+--- a/drivers/gpu/drm/xe/Kconfig
++++ b/drivers/gpu/drm/xe/Kconfig
+@@ -54,7 +54,7 @@ config DRM_XE
+ 
+ config DRM_XE_DISPLAY
+ 	bool "Enable display support"
+-	depends on DRM_XE && DRM_XE=m && HAS_IOPORT
++	depends on DRM_XE && HAS_IOPORT
+ 	select FB_IOMEM_HELPERS if DRM_FBDEV_EMULATION
+ 	select I2C
+ 	select I2C_ALGOBIT
+-- 
+2.34.1
+

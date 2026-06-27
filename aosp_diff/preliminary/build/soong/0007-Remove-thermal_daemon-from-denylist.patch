@@ -1,0 +1,30 @@
+From 7dfc359c474e31f63fd7ae8421a96610167fc7e9 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Thu, 18 Jun 2026 06:26:46 +0000
+Subject: [PATCH] Remove external from the Android.mk denylist
+
+Since external/thermal_daemon is still using Android.mk
+to build which is added to AOSP denylist. So removing the check
+untill it is moved to Android.bp
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ ui/build/androidmk_denylist.go | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/ui/build/androidmk_denylist.go b/ui/build/androidmk_denylist.go
+index 3cccfcaef6..39c1994df6 100644
+--- a/ui/build/androidmk_denylist.go
++++ b/ui/build/androidmk_denylist.go
+@@ -34,7 +34,6 @@ var androidmk_denylist []string = []string{
+ 	"device/google/",
+ 	"device/google_car/",
+ 	"device/sample/",
+-	"external/",
+ 	"frameworks/",
+ 	"hardware/google/",
+ 	"hardware/interfaces/",
+-- 
+2.34.1
+

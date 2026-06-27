@@ -1,0 +1,27 @@
+From 67c9933412b307e9343cf33cfa833e27f75d3d20 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 22 Jun 2026 08:51:28 +0000
+Subject: [PATCH] Updating the first api version to 202606
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/device-specific/caas/caas.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/groups/device-specific/caas/caas.mk b/groups/device-specific/caas/caas.mk
+index 125f6ad..4bb60c7 100644
+--- a/groups/device-specific/caas/caas.mk
++++ b/groups/device-specific/caas/caas.mk
+@@ -75,7 +75,7 @@ else
+ PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
+ endif
+ {{^ota-update}}
+-PRODUCT_SHIPPING_API_LEVEL := 36
++PRODUCT_SHIPPING_API_LEVEL := 202604
+ ifeq ($(BASE_LTS2024_ANDROID_KERNEL), true)
+ PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
+ else
+-- 
+2.34.1
+

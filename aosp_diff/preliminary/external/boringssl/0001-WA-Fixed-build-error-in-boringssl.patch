@@ -1,4 +1,4 @@
-From 9313893e838fc7ad7cd900868ba2c75583bd6fd9 Mon Sep 17 00:00:00 2001
+From 72d6992b4916bb82765a9615d3c60aad9e8085a9 Mon Sep 17 00:00:00 2001
 From: Ankit Agarwal <ankit.agarwal@intel.com>
 Date: Tue, 24 Dec 2024 05:21:18 +0000
 Subject: [PATCH] [WA] Fixed build error in boringssl.
@@ -11,15 +11,15 @@ Tests: Prepared EB, there is no error.
 Tracked-On: NA
 Signed-off-by: Ankit Agarwal <ankit.agarwal@intel.com>
 ---
- src/crypto/internal.h              | 24 ++++++++++++++++--------
- src/crypto/rand_extra/getentropy.c |  8 ++++++++
- 2 files changed, 24 insertions(+), 8 deletions(-)
+ src/crypto/internal.h         | 28 +++++++++++++++++++---------
+ src/crypto/rand/getentropy.cc |  8 ++++++++
+ 2 files changed, 27 insertions(+), 9 deletions(-)
 
 diff --git a/src/crypto/internal.h b/src/crypto/internal.h
-index 6d5736d5..91dce221 100644
+index 1a5ea4b5..3bcbfa26 100644
 --- a/src/crypto/internal.h
 +++ b/src/crypto/internal.h
-@@ -324,6 +324,7 @@ static inline int buffers_alias(const void *a, size_t a_bytes,
+@@ -184,6 +184,7 @@ static inline int buffers_alias(const void *a, size_t a_bytes, const void *b,
  // power of two, and |ptr| must have at least |alignment - 1| bytes of scratch
  // space.
  static inline void *align_pointer(void *ptr, size_t alignment) {
@@ -27,7 +27,7 @@ index 6d5736d5..91dce221 100644
    // |alignment| must be a power of two.
    assert(alignment != 0 && (alignment & (alignment - 1)) == 0);
    // Instead of aligning |ptr| as a |uintptr_t| and casting back, compute the
-@@ -331,7 +332,7 @@ static inline void *align_pointer(void *ptr, size_t alignment) {
+@@ -191,7 +192,7 @@ static inline void *align_pointer(void *ptr, size_t alignment) {
    // to |uintptr_t| and back gives the same pointer, but general
    // integer-to-pointer conversions are implementation-defined. GCC does define
    // it in the useful way, but this makes fewer assumptions.
@@ -36,7 +36,7 @@ index 6d5736d5..91dce221 100644
    ptr = (char *)ptr + offset;
    assert(((uintptr_t)ptr & (alignment - 1)) == 0);
    return ptr;
-@@ -555,9 +556,11 @@ static inline int constant_time_select_int(crypto_word_t mask, int a, int b) {
+@@ -422,9 +423,11 @@ static inline uint32_t constant_time_select_32(crypto_word_t mask, uint32_t a,
  static inline void constant_time_conditional_memcpy(void *dst, const void *src,
                                                      const size_t n,
                                                      const crypto_word_t mask) {
@@ -50,7 +50,7 @@ index 6d5736d5..91dce221 100644
    for (size_t i = 0; i < n; i++) {
      out[i] = constant_time_select_8(mask, in[i], out[i]);
    }
-@@ -569,9 +572,11 @@ static inline void constant_time_conditional_memcpy(void *dst, const void *src,
+@@ -436,9 +439,11 @@ static inline void constant_time_conditional_memcpy(void *dst, const void *src,
  static inline void constant_time_conditional_memxor(void *dst, const void *src,
                                                      size_t n,
                                                      const crypto_word_t mask) {
@@ -64,7 +64,7 @@ index 6d5736d5..91dce221 100644
  #if defined(__GNUC__) && !defined(__clang__)
    // gcc 13.2.0 doesn't automatically vectorize this loop regardless of barrier
    typedef uint8_t v32u8 __attribute__((vector_size(32), aligned(1), may_alias));
-@@ -1147,10 +1152,10 @@ static inline crypto_word_t CRYPTO_load_word_be(const void *in) {
+@@ -957,10 +962,10 @@ static inline crypto_word_t CRYPTO_load_word_be(const void *in) {
    crypto_word_t v;
    OPENSSL_memcpy(&v, in, sizeof(v));
  #if defined(OPENSSL_64_BIT)
@@ -77,32 +77,32 @@ index 6d5736d5..91dce221 100644
    return CRYPTO_bswap4(v);
  #endif
  }
-@@ -1357,7 +1362,9 @@ int boringssl_self_test_hmac_sha256(void);
+@@ -1071,11 +1076,16 @@ OPENSSL_EXPORT int boringssl_self_test_slhdsa();
  #if defined(BORINGSSL_FIPS_COUNTERS)
  void boringssl_fips_inc_counter(enum fips_counter_t counter);
  #else
--OPENSSL_INLINE void boringssl_fips_inc_counter(enum fips_counter_t counter) {}
-+OPENSSL_INLINE void boringssl_fips_inc_counter(enum fips_counter_t counter) {
+-inline void boringssl_fips_inc_counter(enum fips_counter_t counter) {}
++inline void boringssl_fips_inc_counter(enum fips_counter_t counter) {
 +    int i = (counter < 0);
 +}
  #endif
  
  #if defined(BORINGSSL_FIPS_BREAK_TESTS)
-@@ -1367,6 +1374,7 @@ OPENSSL_INLINE int boringssl_fips_break_test(const char *test) {
- }
- #else
- OPENSSL_INLINE int boringssl_fips_break_test(const char *test) {
+-inline int boringssl_fips_break_test(const char *test) {
++inline int boringssl_fips_break_test(const char *test) { 
 +  int i = (strcmp("test", test) == 0);
-   return 0;
++  return 0;
++}
+   const char *const value = getenv("BORINGSSL_FIPS_BREAK_TEST");
+   return value != nullptr && strcmp(value, test) == 0;
  }
- #endif  // BORINGSSL_FIPS_BREAK_TESTS
-diff --git a/src/crypto/rand_extra/getentropy.c b/src/crypto/rand_extra/getentropy.c
-index 234b9b68..33298826 100644
---- a/src/crypto/rand_extra/getentropy.c
-+++ b/src/crypto/rand_extra/getentropy.c
-@@ -30,6 +30,14 @@
- #include <sys/random.h>
- #endif
+diff --git a/src/crypto/rand/getentropy.cc b/src/crypto/rand/getentropy.cc
+index 7e85d8ab..43277d8a 100644
+--- a/src/crypto/rand/getentropy.cc
++++ b/src/crypto/rand/getentropy.cc
+@@ -35,6 +35,14 @@ using namespace bssl;
+ 
+ void bssl::CRYPTO_init_sysrand() {}
  
 +int getentropy(void* buffer, size_t buffer_size) {
 +    if (buffer_size > 256) {
@@ -113,7 +113,7 @@ index 234b9b68..33298826 100644
 +}
 +
  // CRYPTO_sysrand puts |requested| random bytes into |out|.
- void CRYPTO_sysrand(uint8_t *out, size_t requested) {
+ void bssl::CRYPTO_sysrand(uint8_t *out, size_t requested) {
    while (requested > 0) {
 -- 
 2.34.1

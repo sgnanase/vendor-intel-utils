@@ -1,0 +1,31 @@
+From ee5970c439b35a4f88730bb0bec783da1505c5f8 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 23 Jun 2026 10:10:19 +0000
+Subject: [PATCH] Add -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE alongside the
+ existing flags
+
+This macro tells libc++ "use your built-in default rune table"
+
+Tests: Builds and boots
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ libsslsupport/Android.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libsslsupport/Android.mk b/libsslsupport/Android.mk
+index e7b3bbd..177cf44 100644
+--- a/libsslsupport/Android.mk
++++ b/libsslsupport/Android.mk
+@@ -140,6 +140,7 @@ LOCAL_CFLAGS += -Ibionic/libc/kernel/uapi/asm-x86
+ LOCAL_CFLAGS += -Ibionic/libc/kernel/android/uapi
+ LOCAL_CFLAGS += -D_LIBCPP_BUILDING_LIBRARY
+ LOCAL_CFLAGS += -D_LIBCPP_HAS_NO_THREADS
++LOCAL_CFLAGS += -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
+ LOCAL_CFLAGS += -DOPENSSL_NO_THREADS
+ LOCAL_CFLAGS += -U__linux__
+ include $(BUILD_EFI_STATIC_LIBRARY)
+-- 
+2.34.1
+

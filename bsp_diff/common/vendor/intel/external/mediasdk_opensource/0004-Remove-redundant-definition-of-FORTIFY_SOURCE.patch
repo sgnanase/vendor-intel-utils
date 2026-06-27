@@ -1,0 +1,30 @@
+From bdbf8fe4ca399858fab0c1e3798bc3dee016cc2c Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Mon, 8 Jun 2026 17:28:26 +0000
+Subject: [PATCH] Remove redundant definition of FORTIFY_SOURCE
+
+Remove the redundant -D_FORTIFY_SOURCE=2 from mfx_defs.mk
+since Android's build system already sets the appropriate fortify level
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ android/mfx_defs.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/android/mfx_defs.mk b/android/mfx_defs.mk
+index 83626666..09e5e44d 100644
+--- a/android/mfx_defs.mk
++++ b/android/mfx_defs.mk
+@@ -87,7 +87,7 @@ MFX_CFLAGS += \
+ MFX_CFLAGS += \
+   -fstack-protector \
+   -fPIE -fPIC \
+-  -O2 -D_FORTIFY_SOURCE=2 \
++  -O2 \
+   -Wformat -Wformat-security \
+   -fexceptions -frtti \
+   -Wno-null-pointer-subtraction
+-- 
+2.34.1
+

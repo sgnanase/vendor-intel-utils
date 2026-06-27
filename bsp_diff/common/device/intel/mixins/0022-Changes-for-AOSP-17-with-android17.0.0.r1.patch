@@ -1,0 +1,59 @@
+From d5ea97ee584d3c475e6a6790ba47e7c576ce0722 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 23 Jun 2026 09:13:51 +0000
+Subject: [PATCH] Changes for AOSP 17 with android17.0.0.r1
+
+These changes are required for bringingup Android 17
+for celadon.
+
+Tests: Build and boot
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ groups/device-specific/caas/manifest.xml | 2 +-
+ groups/kernel/AndroidBoard.mk            | 2 +-
+ groups/npu/true/product.mk               | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/groups/device-specific/caas/manifest.xml b/groups/device-specific/caas/manifest.xml
+index 4530169..8a7b6a8 100644
+--- a/groups/device-specific/caas/manifest.xml
++++ b/groups/device-specific/caas/manifest.xml
+@@ -37,6 +37,6 @@
+     </hal>
+     <!--<kernel target-level="5"/>-->
+     <sepolicy>
+-        <version>202504</version>
++        <version>202606</version>
+     </sepolicy>
+ </manifest>
+diff --git a/groups/kernel/AndroidBoard.mk b/groups/kernel/AndroidBoard.mk
+index b502bbe..dccadc6 100644
+--- a/groups/kernel/AndroidBoard.mk
++++ b/groups/kernel/AndroidBoard.mk
+@@ -6,7 +6,7 @@ PREBUILT_KERNEL_ROOT := vendor/intel/utils_priv/kernel/prebuilts/6.6/{{{prebuilt
+ endif
+ endif
+ 
+-TARGET_KERNEL_CLANG_VERSION := r584948b
++TARGET_KERNEL_CLANG_VERSION := r596125
+ CLANG_PREBUILTS_PATH := $(abspath $(INTEL_PATH_DEVICE)/../../../prebuilts/clang)
+ 
+ ifneq ($(TARGET_KERNEL_CLANG_VERSION),)
+diff --git a/groups/npu/true/product.mk b/groups/npu/true/product.mk
+index b5904c8..b08b0f1 100644
+--- a/groups/npu/true/product.mk
++++ b/groups/npu/true/product.mk
+@@ -4,7 +4,7 @@ LOCAL_NPU_FIRMWARE_DIR_PREBUILTS := hardware/intel/external/npu-prebuilts/firmwa
+ PRODUCT_COPY_FILES += \
+     $(LOCAL_NPU_FIRMWARE_DIR)/vpu_37xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_37xx_v0.0.bin \
+     $(LOCAL_NPU_FIRMWARE_DIR)/vpu_40xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_40xx_v0.0.bin \
+-    $(LOCAL_NPU_FIRMWARE_DIR_PREBUILTS)/vpu_50xx_v0.0.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_50xx_v0.0.bin
++    $(LOCAL_NPU_FIRMWARE_DIR_PREBUILTS)/vpu_50xx_v1.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/intel/vpu/vpu_50xx_v1.bin
+ 
+ PRODUCT_PACKAGES += \
+     libnpu_driver_compiler \
+-- 
+2.34.1
+

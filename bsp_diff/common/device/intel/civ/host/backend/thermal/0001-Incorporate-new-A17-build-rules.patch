@@ -1,0 +1,22 @@
+From 7ee5d0f4d4913a8e26d686508f984c4ab2342237 Mon Sep 17 00:00:00 2001
+From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
+Date: Tue, 23 Jun 2026 11:38:00 +0000
+Subject: [PATCH] Incorporate new A17 build rules
+
+Tracked-On: NA
+Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
+---
+ vm_thermal_utility/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vm_thermal_utility/Makefile b/vm_thermal_utility/Makefile
+index 34f91dd..d8e7ed7 100644
+--- a/vm_thermal_utility/Makefile
++++ b/vm_thermal_utility/Makefile
+@@ -1,2 +1,2 @@
+ thermmake: thermal_sysfsread.c
+-	clang -o thermsys thermal_sysfsread.c -I -Wall -Wpointer-sign -Wuninitialized -Wunused-parameter
++	clang -o $(OUT)/thermsys thermal_sysfsread.c -I -Wall -Wpointer-sign -Wuninitialized -Wunused-parameter
+-- 
+2.34.1
+

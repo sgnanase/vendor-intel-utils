@@ -1,4 +1,4 @@
-From 533447b37947437633aae65d9c76a75afc48bdc4 Mon Sep 17 00:00:00 2001
+From c4bb7348fc113cc1d88ceb8e246338599c5e2949 Mon Sep 17 00:00:00 2001
 From: Chenglei Ren <chenglei.ren@intel.com>
 Date: Tue, 24 Dec 2024 05:33:37 +0000
 Subject: [PATCH] use private libdrm instead of external libdrm
@@ -37,9 +37,9 @@ Signed-off-by: Chenglei Ren <chenglei.ren@intel.com>
  tests/modetest/Android.bp         | 10 +++++-----
  tests/modetest/Android.sources.bp |  2 +-
  tests/proptest/Android.bp         |  8 ++++----
- tests/util/Android.bp             | 14 +++++++-------
+ tests/util/Android.bp             | 12 ++++++------
  tests/util/Android.sources.bp     |  2 +-
- 26 files changed, 86 insertions(+), 86 deletions(-)
+ 26 files changed, 85 insertions(+), 85 deletions(-)
 
 diff --git a/Android.bp b/Android.bp
 index c38c56f8..44c9772d 100644
@@ -591,17 +591,10 @@ index d7d3280e..696d971e 100644
 +    static_libs: ["libdrm_util_orig"],
  }
 diff --git a/tests/util/Android.bp b/tests/util/Android.bp
-index 7cc95a17..9710558c 100644
+index 7cc95a17..f22d3ead 100644
 --- a/tests/util/Android.bp
 +++ b/tests/util/Android.bp
-@@ -27,19 +27,19 @@ package {
-     // all of the 'license_kinds' from "external_libdrm_license"
-     // to get the below license kinds:
-     //   SPDX-license-identifier-MIT
--    default_applicable_licenses: ["external_libdrm_license"],
-+    default_applicable_licenses: ["external_libdrm_license_orig"],
- }
- 
+@@ -33,13 +33,13 @@ package {
  build = ["Android.sources.bp"]
  
  cc_library_static {
