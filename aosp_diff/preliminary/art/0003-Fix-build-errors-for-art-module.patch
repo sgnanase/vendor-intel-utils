@@ -1,4 +1,4 @@
-From ba5dc21b99f2e44c3248e943ae1c462ec7340f46 Mon Sep 17 00:00:00 2001
+From 8e2bd594dd02b2bd57d096b1bdaabb12523cf4da Mon Sep 17 00:00:00 2001
 From: "Tekriwal, Tanuj" <tanuj.tekriwal@intel.corp-partner.google.com>
 Date: Wed, 10 Jun 2026 09:42:16 +0000
 Subject: [PATCH] Fix build errors for art module.
@@ -12,10 +12,10 @@ Signed-off-by: Tekriwal, Tanuj <tanuj.tekriwal@intel.corp-partner.google.com>
  2 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/build/art.go b/build/art.go
-index c77adf9860..8979637f78 100644
+index 9c8a28f730..4f62fbfabc 100644
 --- a/build/art.go
 +++ b/build/art.go
-@@ -166,7 +166,7 @@ func globalFlags(ctx android.LoadHookContext) ([]string, []string) {
+@@ -165,7 +165,7 @@ func globalFlags(ctx android.LoadHookContext) ([]string, []string) {
  
  func deviceFlags(ctx android.LoadHookContext) []string {
  	var cflags []string
@@ -25,10 +25,10 @@ index c77adf9860..8979637f78 100644
  		deviceFrameSizeLimit = 7400
  	}
 diff --git a/runtime/Android.bp b/runtime/Android.bp
-index 66fe9190da..9389974eea 100644
+index d914820153..a437dac9ac 100644
 --- a/runtime/Android.bp
 +++ b/runtime/Android.bp
-@@ -897,6 +897,9 @@ art_cc_library {
+@@ -1001,6 +1001,9 @@ art_cc_library {
          "libart-compiler",
          "libart-runtime",
      ],
